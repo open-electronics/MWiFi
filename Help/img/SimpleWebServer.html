@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=windows-1250">
+  <meta name="generator" content="PSPad editor, www.pspad.com">
+  <title></title>
+  </head>
+  <body>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Untitled</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="SynEdit HTML exporter" />
+<style type="text/css">
+<!--
+body { color: #000000; background-color: #FFFFFF; }
+.cpp1-assembler { }
+.cpp1-brackets { }
+.cpp1-character { }
+.cpp1-comment { color: #008000; font-style: italic; }
+.cpp1-float { color: #000080; }
+.cpp1-hexadecimal { color: #000080; }
+.cpp1-identifier { }
+.cpp1-illegalchar { }
+.cpp1-number { color: #000080; }
+.cpp1-octal { color: #0000FF; }
+.cpp1-preprocessor { }
+.cpp1-reservedword { font-weight: bold; }
+.cpp1-space { color: #008080; }
+.cpp1-string { color: #800000; }
+.cpp1-symbol { }
+-->
+</style>
+</head>
+<body>
+<pre>
+<code><span style="font: 8pt Courier New;"><span class="cpp1-comment">/*
+* This example makes a simple WEB server. 
+* Two Analogical values A1 and A2 and two Digital values D4 and D5 are shown at each refesh.
+* The server show only one page.
+* Page is stored in program-memory and a dynamic response compilation is used for values reading.
+* Each parameater is represented by a tag @. This tag is substituded with a string found in a prepared 
+* array of strings. (Substitution takes place by sequential order)
+*
+* The getRequest() function automatically activates the function corresponding to a demanded page (resource) 
+* For this purpose you have to populate an array of WEBRES type defined.
+* Each WEBRES is a struct of 2 element:
+*  - URL name : just last name with a slash prefixed (ex. /index)
+*  - function name : the function that has to manage request and send response
+* In this case WEBRES array has just only one element (the index page).
+*
+* Console print is done just for controll (you can delete)
+*
+* Library error management have reset policy at present.
+* So, socket problem or net connection lost produces automatic reset.
+*
+* Author: Daniele Denaro
+*/
+
+</span><span class="cpp1-preprocessor">#include &lt;HTTPlib.h&gt;             </span><span class="cpp1-comment">// include library (HTTP library is a derivate class of WiFi)
+
+</span><span class="cpp1-preprocessor">#define ACCESSPOINT  &quot;D-Link-casa&quot;       </span><span class="cpp1-comment">// access point name
+</span><span class="cpp1-preprocessor">#define PASSWORD     &quot;&quot;                  </span><span class="cpp1-comment">// password if WAP
+</span><span class="cpp1-preprocessor">#define PORT         80                </span><span class="cpp1-comment">// server listening port 
+
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">mac[</span><span class="cpp1-number">18</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                  </span><span class="cpp1-comment">// buffer for mac address of shield
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">name[</span><span class="cpp1-number">8</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                  </span><span class="cpp1-comment">// char for shield name on net
+
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">ip[</span><span class="cpp1-number">16</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                   </span><span class="cpp1-comment">// buffer for (dynamic) ip address as string
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">remip[</span><span class="cpp1-number">16</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                </span><span class="cpp1-comment">// buffer for remote ip asking link wit us
+</span><span class="cpp1-identifier">boolean</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fc=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;</span><span class="cpp1-space">                  </span><span class="cpp1-comment">// flag connection
+</span><span class="cpp1-identifier">boolean</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fs=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;</span><span class="cpp1-space">                  </span><span class="cpp1-comment">// flag socket open
+</span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">ssocket;</span><span class="cpp1-space">                   </span><span class="cpp1-comment">// server socket handle
+</span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">csocket;</span><span class="cpp1-space">                   </span><span class="cpp1-comment">// client socket handle
+
+</span><span class="cpp1-identifier">HTTP</span><span class="cpp1-space"> </span><span class="cpp1-identifier">WIFI;</span><span class="cpp1-space">                     </span><span class="cpp1-comment">//instance of MWiFi library
+
+</span><span class="cpp1-preprocessor">#define VERBOSE 1              </span><span class="cpp1-comment">// if 1 some information will be printed on console
+
+/**************** HTML pages *****************/
+</span><span class="cpp1-identifier">prog_char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">pageServer[]</span><span class="cpp1-space"> </span><span class="cpp1-identifier">PROGMEM=
+</span><span class="cpp1-string">&quot;&lt;html&gt;&lt;head&gt;&quot;
+&quot;&lt;title&gt;Arduino Server&lt;/title&gt;&quot;
+&quot;&lt;style type='text/css'&gt;&quot;
+&quot;body,td,th {color: #FFF;}&quot;
+&quot;body {background-color: #066;}&quot;
+&quot;a:link {color: #FF0;}&quot;
+&quot;a:visited {color: #FF0;}&quot;
+&quot;&lt;/style&gt;&lt;/head&gt;&quot;
+&quot;&lt;body&gt;&quot;
+&quot;&lt;h1&gt;Welcome to Arduino Server&lt;/h1&gt;&quot;
+&quot;&lt;h3&gt;Analogical and Digital input&lt;/h3&gt;&quot;
+&quot;&lt;table width='300px' border='1' cellspacing='10' cellpadding='2'&gt;&quot;
+&quot;&lt;tr&gt;&lt;td width='200px'&gt;Analog A1&lt;/td&gt;&quot;
+&quot;&lt;td width='100px'&gt;@&lt;/td&gt;&lt;/tr&gt;&quot;</span><span class="cpp1-space">                    </span><span class="cpp1-comment">//@ tag for A1 value
+</span><span class="cpp1-string">&quot;&lt;tr&gt;&lt;td&gt;Analog A2&lt;/td&gt;&lt;td&gt;@&lt;/td&gt;&lt;/tr&gt;&quot;</span><span class="cpp1-space">            </span><span class="cpp1-comment">//@ tag for A2 value
+</span><span class="cpp1-string">&quot;&lt;tr&gt;&lt;td&gt;Digital D4&lt;/td&gt;&lt;td&gt;@&lt;/td&gt;&lt;/tr&gt;&quot;</span><span class="cpp1-space">           </span><span class="cpp1-comment">//@ tag for D4 value
+</span><span class="cpp1-string">&quot;&lt;tr&gt;&lt;td&gt;Digital D5&lt;/td&gt;&lt;td&gt;@&lt;/td&gt;&lt;/tr&gt;&quot;</span><span class="cpp1-space">           </span><span class="cpp1-comment">//@ tag for D5 value
+</span><span class="cpp1-string">&quot;&lt;/table&gt;&quot;
+&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span><span class="cpp1-symbol">;
+
+</span><span class="cpp1-comment">/******************** end HTML Pages *********************/
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">setup()</span><span class="cpp1-space"> 
+</span><span class="cpp1-brackets">{
+
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.begin();</span><span class="cpp1-space">                </span><span class="cpp1-comment">// startup wifi shield
+
+</span><span class="cpp1-preprocessor">#if VERBOSE     
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.begin(</span><span class="cpp1-number">9600</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.getConfig();</span><span class="cpp1-space">            </span><span class="cpp1-comment">// reads default info from shield
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.getMAC(mac);</span><span class="cpp1-space">            </span><span class="cpp1-comment">// gets string mac of shield
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.getName(name);</span><span class="cpp1-space">          </span><span class="cpp1-comment">// gets name of shield on net 
+</span><span class="cpp1-space">  </span><span class="cpp1-comment">// print information on console
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;MAC: &quot;</span><span class="cpp1-brackets">);Serial.println(mac);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;Name: &quot;</span><span class="cpp1-brackets">);Serial.println(name);
+#endif
+
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.setNetMask(</span><span class="cpp1-string">&quot;255.255.255.0&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-space">  </span><span class="cpp1-comment">//modify default
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.setGateway(</span><span class="cpp1-string">&quot;0.0.0.0&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-space">        </span><span class="cpp1-comment">//modify default
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">netConnection();
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">pinMode(</span><span class="cpp1-number">4</span><span class="cpp1-symbol">,INPUT_PULLUP);</span><span class="cpp1-space">           </span><span class="cpp1-comment">// pin 4 as input with pullup (1 if not closed to GND)
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">pinMode(</span><span class="cpp1-number">5</span><span class="cpp1-symbol">,INPUT_PULLUP);</span><span class="cpp1-space">           </span><span class="cpp1-comment">// pin 5 as input with pullup
+</span><span class="cpp1-brackets">}</span><span class="cpp1-space"> 
+</span><span class="cpp1-comment">/************************ end setup ***************************/
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">netConnection()</span><span class="cpp1-space">                                           </span><span class="cpp1-comment">// connection to network
+</span><span class="cpp1-brackets">{
+#if VERBOSE    
+</span><span class="cpp1-space">    </span><span class="cpp1-identifier">Serial.println(</span><span class="cpp1-string">&quot;Waiting for connection...&quot;</span><span class="cpp1-brackets">);Serial.println(ip);
+#endif 
+</span><span class="cpp1-space">    </span><span class="cpp1-comment">// if WPA connection: using password it is ossible to waith 1m
+</span><span class="cpp1-space">    </span><span class="cpp1-comment">// using key just ms
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(PASSWORD==</span><span class="cpp1-string">&quot;&quot;</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{fc=WIFI.ConnectOpen(ACCESSPOINT);}</span><span class="cpp1-space">         </span><span class="cpp1-comment">// if passw= empty string connect in open mode
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">else</span><span class="cpp1-space">              </span><span class="cpp1-brackets">{fc=WIFI.ConnectWPAwithPsw(ACCESSPOINT,PASSWORD);}</span><span class="cpp1-space"> </span><span class="cpp1-comment">// else connect in WAP mode
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(!fc)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{Serial.println(</span><span class="cpp1-string">&quot;No connection!&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}
+</span><span class="cpp1-space">    </span><span class="cpp1-identifier">WIFI.getIP(ip);</span><span class="cpp1-space">                                            </span><span class="cpp1-comment">// get dynamic ip
+</span><span class="cpp1-preprocessor">#if VERBOSE    
+</span><span class="cpp1-space">    </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;Net Connected as &quot;</span><span class="cpp1-brackets">);Serial.println(ip);
+#endif    
+</span><span class="cpp1-space">    </span><span class="cpp1-identifier">ssocket=WIFI.openServerTCP(PORT);</span><span class="cpp1-comment">// open server socket. Listen for connection from remote (just one connection)
+</span><span class="cpp1-space">                                     </span><span class="cpp1-comment">// we must poll in loop routine to see if connection asked from remote
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(ssocket==</span><span class="cpp1-number">255</span><span class="cpp1-brackets">)</span><span class="cpp1-space">                </span><span class="cpp1-comment">//socket non valid. No server open. 
+</span><span class="cpp1-space">    </span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">WIFI.Disconnect();fc=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;
+#if VERBOSE      
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">Serial.println(</span><span class="cpp1-string">&quot;Socket problem. Disconnected!&quot;</span><span class="cpp1-brackets">);
+#endif
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">wdt_enable(WDTO_500MS);</span><span class="cpp1-space">           </span><span class="cpp1-comment">// reset
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">delay</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(</span><span class="cpp1-number">1000</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">    </span><span class="cpp1-brackets">}
+#if VERBOSE    
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;Server active on port &quot;</span><span class="cpp1-brackets">);Serial.println(PORT);
+#endif
+}
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">socketConnection()</span><span class="cpp1-space">                                          </span><span class="cpp1-comment">// link with remote client 
+</span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">      </span><span class="cpp1-comment">// verify if someone asks for connection on port PORT
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">csocket=WIFI.pollingAccept(ssocket);</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">if</span><span class="cpp1-brackets">(csocket&lt;</span><span class="cpp1-number">255</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fs=</span><span class="cpp1-number">1</span><span class="cpp1-symbol">;</span><span class="cpp1-space"> </span><span class="cpp1-comment">//csoccket is the client socket to communicate
+</span><span class="cpp1-preprocessor">#if VERBOSE
+</span><span class="cpp1-space">      </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fs)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{Serial.print(</span><span class="cpp1-string">&quot;Server connected with : &quot;</span><span class="cpp1-brackets">);WIFI.getRemoteIP(remip);Serial.println(remip);}
+#endif      
+}
+
+</span><span class="cpp1-space">  
+</span><span class="cpp1-comment">/*
+* Make an array of WEBRES elements. Heach of them are made by a couple of URLname-routinename.
+*/
+</span><span class="cpp1-identifier">WEBRES</span><span class="cpp1-space"> </span><span class="cpp1-identifier">rs[]={{</span><span class="cpp1-string">&quot;/index&quot;</span><span class="cpp1-symbol">,pindex}};</span><span class="cpp1-space">  </span><span class="cpp1-comment">//only one page
+
+/*************************** loop *******************************/
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">loop()</span><span class="cpp1-space"> 
+</span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">if</span><span class="cpp1-brackets">(!fc)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{delay(</span><span class="cpp1-number">10000</span><span class="cpp1-brackets">);</span><span class="cpp1-space"> </span><span class="cpp1-identifier">netConnection();}</span><span class="cpp1-space">   </span><span class="cpp1-comment">// if not connection yet, make it
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">if</span><span class="cpp1-brackets">(fc)</span><span class="cpp1-space">                                     </span><span class="cpp1-comment">// if server active (connection established)
+</span><span class="cpp1-space">  </span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(!fs)</span><span class="cpp1-space">  </span><span class="cpp1-identifier">socketConnection();</span><span class="cpp1-space">            </span><span class="cpp1-comment">// if no one is connected listen for any connection try 
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fs)</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.getRequest(csocket,</span><span class="cpp1-number">8</span><span class="cpp1-symbol">,rs);</span><span class="cpp1-space">  </span><span class="cpp1-comment">// if someone is connected listen for any http request 
+</span><span class="cpp1-space">                                             </span><span class="cpp1-comment">// array of WEBRES elements is provided, with its dimension
+</span><span class="cpp1-space">  </span><span class="cpp1-brackets">}</span><span class="cpp1-space">                                          </span><span class="cpp1-comment">// correspondig function is automatically called
+</span><span class="cpp1-space">                                             </span><span class="cpp1-comment">// if no risource corresponds, &quot;not found&quot; response is sent
+</span><span class="cpp1-brackets">  if (fs){ WIFI.closeSock(csocket);fs=false;}// better to close socket after sent response.
+}
+
+</span><span class="cpp1-comment">/********************* Page Functions ***************************/</span><span class="cpp1-space"> 
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">pindex(</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*query)</span><span class="cpp1-space">                     </span><span class="cpp1-comment">// index page
+</span><span class="cpp1-brackets">{
+#if VERBOSE
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.println(</span><span class="cpp1-string">&quot;Index...&quot;</span><span class="cpp1-brackets">);
+#endif 
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*val[</span><span class="cpp1-number">4</span><span class="cpp1-brackets">];</span><span class="cpp1-space">       </span><span class="cpp1-comment">//array of values (as string)
+</span><span class="cpp1-space">     </span><span class="cpp1-comment">// dynamic response: a set of values string populates an array of 4 positions
+</span><span class="cpp1-space">     </span><span class="cpp1-comment">// corresponding to 4 tags @ in pageanalog
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val0[</span><span class="cpp1-number">5</span><span class="cpp1-brackets">];sprintf(val0,</span><span class="cpp1-string">&quot;%d&quot;</span><span class="cpp1-symbol">,analogRead(</span><span class="cpp1-number">1</span><span class="cpp1-brackets">));val[</span><span class="cpp1-number">0</span><span class="cpp1-brackets">]=val0;</span><span class="cpp1-space">  </span><span class="cpp1-comment">//read analog A1
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val1[</span><span class="cpp1-number">5</span><span class="cpp1-brackets">];sprintf(val1,</span><span class="cpp1-string">&quot;%d&quot;</span><span class="cpp1-symbol">,analogRead(</span><span class="cpp1-number">2</span><span class="cpp1-brackets">));val[</span><span class="cpp1-number">1</span><span class="cpp1-brackets">]=val1;</span><span class="cpp1-space">  </span><span class="cpp1-comment">//read analog A2
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">if</span><span class="cpp1-brackets">(digitalRead(</span><span class="cpp1-number">4</span><span class="cpp1-brackets">))</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val[</span><span class="cpp1-number">2</span><span class="cpp1-brackets">]=</span><span class="cpp1-string">&quot;ON&quot;</span><span class="cpp1-symbol">;</span><span class="cpp1-reservedword">else</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val[</span><span class="cpp1-number">2</span><span class="cpp1-brackets">]=</span><span class="cpp1-string">&quot;OFF&quot;</span><span class="cpp1-symbol">;</span><span class="cpp1-space">           </span><span class="cpp1-comment">//read digital D4
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">if</span><span class="cpp1-brackets">(digitalRead(</span><span class="cpp1-number">5</span><span class="cpp1-brackets">))</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val[</span><span class="cpp1-number">3</span><span class="cpp1-brackets">]=</span><span class="cpp1-string">&quot;ON&quot;</span><span class="cpp1-symbol">;</span><span class="cpp1-reservedword">else</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val[</span><span class="cpp1-number">3</span><span class="cpp1-brackets">]=</span><span class="cpp1-string">&quot;OFF&quot;</span><span class="cpp1-symbol">;</span><span class="cpp1-space">           </span><span class="cpp1-comment">//read digital D5
+</span><span class="cpp1-space">  
+     </span><span class="cpp1-comment">//all values as string in val array
+</span><span class="cpp1-space"> 
+   </span><span class="cpp1-identifier">WIFI.sendDynResponse(csocket,pageServer,</span><span class="cpp1-number">4</span><span class="cpp1-symbol">,val);</span><span class="cpp1-space"> </span><span class="cpp1-comment">// send dynamic response 4 tags substitutions 
+</span><span class="cpp1-brackets">}
+
+</span><span class="cpp1-comment">/********************** End page functions ************************/
+
+
+</span></span>
+</code></pre>
+</body>
+</html>
+  </body>
+</html>

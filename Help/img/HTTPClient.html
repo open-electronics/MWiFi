@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=windows-1250">
+  <meta name="generator" content="PSPad editor, www.pspad.com">
+  <title></title>
+  </head>
+  <body>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Untitled</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="SynEdit HTML exporter" />
+<style type="text/css">
+<!--
+body { color: #000000; background-color: #FFFFFF; }
+.cpp1-assembler { }
+.cpp1-brackets { }
+.cpp1-character { }
+.cpp1-comment { color: #008000; font-style: italic; }
+.cpp1-float { color: #000080; }
+.cpp1-hexadecimal { color: #000080; }
+.cpp1-identifier { }
+.cpp1-illegalchar { }
+.cpp1-number { color: #000080; }
+.cpp1-octal { color: #0000FF; }
+.cpp1-preprocessor { }
+.cpp1-reservedword { font-weight: bold; }
+.cpp1-space { color: #008080; }
+.cpp1-string { color: #800000; }
+.cpp1-symbol { }
+-->
+</style>
+</head>
+<body>
+<pre>
+<code><span style="font: 8pt Courier New;"><span class="cpp1-comment">/*
+* This example demonstrates how to use HTTP client API to send data to a web application at regular intervals.
+* 2 analogical pin A1 and A2 and 2 digital input pin D4 and D5 are monitored each time interval TIMEINT
+* and sent to a program on REMOTEIP and port PORT. 
+* Data are sent as a record format:
+*    valAna1 valAna2 valDig4 valDig4 
+* PC program receives and stores on file. 
+* Beside, because the lack of real time clock on Arduino, PC program has to put a timestamp too.
+*
+* Console prints are done just for controll (you can delete)
+* Library error management have reset policy at present.
+* So, socket problem (pc program stop link) or net connection lost produces automatic reset.
+*
+* A simply java program (SocketLog.jar) is provided to test this example.
+* Author: Daniele Denaro
+*/
+
+</span><span class="cpp1-preprocessor">#include &lt;HTTPlib.h&gt;             </span><span class="cpp1-comment">// include library
+
+/********* Definitions (adapt to your environment) **********************/
+
+</span><span class="cpp1-preprocessor">#define ACCESSPOINT  &quot;D-Link-casa&quot;       </span><span class="cpp1-comment">// access point name
+</span><span class="cpp1-preprocessor">#define PASSWORD     &quot;&quot;                  </span><span class="cpp1-comment">// password if WAP
+</span><span class="cpp1-preprocessor">#define REMOTEIP     &quot;192.168.1.2&quot;       </span><span class="cpp1-comment">// PC computer address
+</span><span class="cpp1-preprocessor">#define PORT         8080                </span><span class="cpp1-comment">// application port
+
+</span><span class="cpp1-preprocessor">#define TIMEINT      10                  </span><span class="cpp1-comment">// time interval in seconds
+</span><span class="cpp1-preprocessor">#define D4            4                  </span><span class="cpp1-comment">// input (pullup) pin D4
+</span><span class="cpp1-preprocessor">#define D8            8                  </span><span class="cpp1-comment">// input (pullup) pin D8
+</span><span class="cpp1-preprocessor">#define AN1           1                  </span><span class="cpp1-comment">// input analogical A1
+</span><span class="cpp1-preprocessor">#define AN2           2                  </span><span class="cpp1-comment">// input analogical A2
+
+/*************************************************************************/
+
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">ip[</span><span class="cpp1-number">16</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                   </span><span class="cpp1-comment">// buffer for local ip address
+</span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fc=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;</span><span class="cpp1-space">                      </span><span class="cpp1-comment">// flag connection
+</span><span class="cpp1-identifier">boolean</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fs=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;</span><span class="cpp1-space">                  </span><span class="cpp1-comment">// flag socket open
+</span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">csocket;</span><span class="cpp1-space">                   </span><span class="cpp1-comment">// client socket handle
+
+</span><span class="cpp1-identifier">HTTP</span><span class="cpp1-space"> </span><span class="cpp1-identifier">WIFI;</span><span class="cpp1-space">                    </span><span class="cpp1-comment">//instance of MWiFi library
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">setup()</span><span class="cpp1-space"> 
+</span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.begin(</span><span class="cpp1-number">9600</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">pinMode(D4,INPUT_PULLUP);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">pinMode(D8,INPUT_PULLUP);
+
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.begin();</span><span class="cpp1-space">                </span><span class="cpp1-comment">// startup wifi shield
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">WIFI.setNetMask(</span><span class="cpp1-string">&quot;255.255.255.0&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-space">  </span><span class="cpp1-comment">//modify default
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.setGateway(</span><span class="cpp1-string">&quot;0.0.0.0&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-space">        </span><span class="cpp1-comment">//modify default
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(PASSWORD==</span><span class="cpp1-string">&quot;&quot;</span><span class="cpp1-brackets">){WIFI.ConnSetOpen(ACCESSPOINT);}</span><span class="cpp1-space">         </span><span class="cpp1-comment">// if passw= empty string connect in open mode
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">else</span><span class="cpp1-space">             </span><span class="cpp1-brackets">{WIFI.ConnSetWPA(ACCESSPOINT,PASSWORD);}</span><span class="cpp1-space"> </span><span class="cpp1-comment">// else connect in WAP mode
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">netConnection();</span><span class="cpp1-space">                   </span><span class="cpp1-comment">// connection to access point   
+</span><span class="cpp1-space"> 
+  </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fc==</span><span class="cpp1-number">1</span><span class="cpp1-brackets">)</span><span class="cpp1-space">  </span><span class="cpp1-identifier">socketConnection();</span><span class="cpp1-space">        </span><span class="cpp1-comment">// if connect to access point try to open socket
+</span><span class="cpp1-space">  </span><span class="cpp1-comment">//end of startup 
+</span><span class="cpp1-brackets">}</span><span class="cpp1-space"> 
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">netConnection()
+{
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">i;</span><span class="cpp1-reservedword">for</span><span class="cpp1-brackets">(i=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;i&lt;</span><span class="cpp1-number">5</span><span class="cpp1-symbol">;i++)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{fc=WIFI.Connect();</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">if</span><span class="cpp1-brackets">(fc)</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">break</span><span class="cpp1-symbol">;}</span><span class="cpp1-space">             </span><span class="cpp1-comment">// try to connect for 5 times
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(!fc)</span><span class="cpp1-space">     </span><span class="cpp1-brackets">{delay(</span><span class="cpp1-number">60000</span><span class="cpp1-brackets">);wdt_enable(WDTO_1S);}</span><span class="cpp1-space">                      </span><span class="cpp1-comment">// reset if no connection 
+</span><span class="cpp1-space">    </span><span class="cpp1-identifier">WIFI.getIP(ip);</span><span class="cpp1-space">                                                       </span><span class="cpp1-comment">// get dynamic ip
+</span><span class="cpp1-space">    </span><span class="cpp1-identifier">Serial.println(</span><span class="cpp1-string">&quot;Net connected!&quot;</span><span class="cpp1-brackets">);
+}
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">socketConnection()
+{
+</span><span class="cpp1-space">    </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;Start socket connection to &quot;</span><span class="cpp1-brackets">);Serial.print(REMOTEIP);
+</span><span class="cpp1-space">    </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;:&quot;</span><span class="cpp1-brackets">);Serial.println(PORT);
+</span><span class="cpp1-space">    </span><span class="cpp1-identifier">csocket=WIFI.openSockTCP(REMOTEIP,PORT);</span><span class="cpp1-space">                             </span><span class="cpp1-comment">// try to connect to remote ip 
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(csocket==</span><span class="cpp1-number">255</span><span class="cpp1-brackets">)
+</span><span class="cpp1-space">     </span><span class="cpp1-brackets">{fs=</span><span class="cpp1-reservedword">false</span><span class="cpp1-symbol">;Serial.println(</span><span class="cpp1-string">&quot;Socket not available!&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}</span><span class="cpp1-space">              </span><span class="cpp1-comment">// socket not valid. No link! 
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">else</span><span class="cpp1-space"> 
+     </span><span class="cpp1-brackets">{fs=</span><span class="cpp1-reservedword">true</span><span class="cpp1-symbol">;Serial.println(</span><span class="cpp1-string">&quot;Socket connected!&quot;</span><span class="cpp1-brackets">);}</span><span class="cpp1-space">                         </span><span class="cpp1-comment">// flag socket link open
+</span><span class="cpp1-brackets">}
+</span><span class="cpp1-space">  
+ </span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">query[</span><span class="cpp1-number">128</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                                     </span><span class="cpp1-comment">// buffer for sending data with GET method 
+</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">rec[</span><span class="cpp1-number">64</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                                        </span><span class="cpp1-comment">// buffer for sending data with POST method
+</span><span class="cpp1-space"> 
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">loop()</span><span class="cpp1-space"> 
+</span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">if</span><span class="cpp1-brackets">(fs)</span><span class="cpp1-space">                                          </span><span class="cpp1-comment">// if socket connected
+</span><span class="cpp1-space">  </span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">an1=analogRead(AN1);</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">sa1[</span><span class="cpp1-number">6</span><span class="cpp1-brackets">];sprintf(sa1,</span><span class="cpp1-string">&quot;%d&quot;</span><span class="cpp1-symbol">,an1);</span><span class="cpp1-space">                 </span><span class="cpp1-comment">// read values
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">an2=analogRead(AN2);</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">sa2[</span><span class="cpp1-number">6</span><span class="cpp1-brackets">];sprintf(sa2,</span><span class="cpp1-string">&quot;%d&quot;</span><span class="cpp1-symbol">,an2);
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">d1=digitalRead(D4);</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">sd1[</span><span class="cpp1-number">3</span><span class="cpp1-brackets">];sprintf(sd1,</span><span class="cpp1-string">&quot;%d&quot;</span><span class="cpp1-symbol">,d1);
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">d2=digitalRead(D8);</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">sd2[</span><span class="cpp1-number">3</span><span class="cpp1-brackets">];sprintf(sd2,</span><span class="cpp1-string">&quot;%d&quot;</span><span class="cpp1-symbol">,d2);
+</span><span class="cpp1-comment">// with method GET 
+/*
+    WIFI.addParameter(query,128,&quot;/TestWIFIArduino/TestClient&quot;,NULL);
+    WIFI.addParameter(query,128,&quot;A1&quot;,sa1);
+    WIFI.addParameter(query,128,&quot;A2&quot;,sa2);
+    WIFI.addParameter(query,128,&quot;D1&quot;,sd1);
+    WIFI.addParameter(query,128,&quot;D2&quot;,sd2);
+    WIFI.sendRequestGET(csocket,query);
+*/
+// with method POST
+</span><span class="cpp1-space">    </span><span class="cpp1-identifier">sprintf(rec,</span><span class="cpp1-string">&quot;%d %d %d %d&quot;</span><span class="cpp1-symbol">,an1,an2,d1,d2);</span><span class="cpp1-space">      </span><span class="cpp1-comment">// prepare record coding values to string
+</span><span class="cpp1-space">    </span><span class="cpp1-identifier">WIFI.sendRequestPOST(csocket,</span><span class="cpp1-string">&quot;/TestWIFIArduino/TestClient&quot;</span><span class="cpp1-symbol">,rec);
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">i;</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*resp=NULL;
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">for</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(i=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;i&lt;</span><span class="cpp1-number">10</span><span class="cpp1-symbol">;i++)</span><span class="cpp1-space">                           </span><span class="cpp1-comment">// receive response
+</span><span class="cpp1-space">    </span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">delay(</span><span class="cpp1-number">100</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">resp=WIFI.getResponse(csocket);
+</span><span class="cpp1-space">      </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(resp!=NULL)</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">break</span><span class="cpp1-symbol">;
+</span><span class="cpp1-space">    </span><span class="cpp1-brackets">}
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(resp!=NULL)</span><span class="cpp1-space"> </span><span class="cpp1-identifier">Serial.println(resp);
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">else</span><span class="cpp1-space"> </span><span class="cpp1-identifier">Serial.println(</span><span class="cpp1-string">&quot;Timeout response&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">  </span><span class="cpp1-brackets">}
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">else</span><span class="cpp1-space"> </span><span class="cpp1-identifier">socketConnection();</span><span class="cpp1-space">                        </span><span class="cpp1-comment">// if socket not yet open try to open
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">delay(TIMEINT*</span><span class="cpp1-number">1000</span><span class="cpp1-brackets">);</span><span class="cpp1-space">                            </span><span class="cpp1-comment">// wait for TIMEINT seconds
+</span><span class="cpp1-brackets">}
+
+
+
+</span></span>
+</code></pre>
+</body>
+</html>
+  </body>
+</html>

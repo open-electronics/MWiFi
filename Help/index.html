@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <title>MWiFi Reference - MWiFi</title>
+  <link rel="shortcut icon" type="image/x-icon" href="http://arduino.cc/en/favicon.png">
+  <link rel='stylesheet' href='arduinoWideRender.css' 
+type='text/css' />
+    <!--HeaderText--><style type='text/css'><!--
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+  .editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border: 2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  td.markup1 { border-bottom: 1px solid #ccf; }
+  div.faq { margin-left:2em; }
+  div.faq p.question { margin: 1em 0 0.75em -2em; font-weight:bold; }
+  div.faq hr { margin-left: -2em; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>  <meta name='robots' content='index,follow' />
+
+  <meta name="verify-v1" content="TtxFIEJAB6zdJ509wLxjnapQzKAMNm9u0Wj4ho6wxIY=" />
+</head>
+<body>
+<div id="page">
+  <!--PageHeaderFmt-->
+  <div id="pageheader">
+    <div class="title"><a href='http://arduino.cc/en'>Arduino</a></div>
+  </div>
+  <!--/PageHeaderFmt-->
+
+  <!--PageLeftFmt-->
+  <div id="pagenav">
+    <div id="navbar">
+  	<p><a class='wikilink' href='http://arduino.cc/en/Main/Buy'>Buy</a>
+<a class='wikilink' href='http://arduino.cc/en/Main/Software'>Download</a>
+<a class='wikilink' href='http://arduino.cc/en/Guide/HomePage'>Getting Started</a>
+<a class='wikilink' href='http://arduino.cc/en/Tutorial/HomePage'>Learning</a>
+<a class='wikilink' href='http://arduino.cc/en/Reference/HomePage'>Reference</a>
+<a class='wikilink' href='http://arduino.cc/en/Main/Hardware'>Hardware</a>
+<a class='wikilink' href='http://arduino.cc/en/Main/FAQ.html'>FAQ</a>
+</p>
+<p class='vspace'></p>
+
+    </div>
+  </div>
+  <!--/PageLeftFmt-->
+
+  <div id="pagetext">
+  <!--PageText-->
+<div id='wikitext'>
+<p>&nbsp;</p>
+<h2>MWiFi and HTTP</h2>
+<p class='vspace'></p><table >
+  <tr><td  width='55%' valign='top'>
+<p class='vspace'></p>
+<p>MWiFi is based on a shield using  MRF24WB0MA and MCW10001A controller from Microchip &#169. </p>
+<p>This library comes with HTTP library ( its derived class ).</p>
+<p>MWiFi communicates with Arduino by 3 pins; two pins for SoftwareSerial and  <strong>pin 7</strong> for shield startup/reset. TX and RX pins are <strong>3 and 2</strong> at present (software defined). Moreover, shield has 4 LEDs, two of tem (0 and 1) used by library. MWiFi has basic functions for network connection (access point or ad-hoc), and for socket opening and management.</p>
+<p>SoftwareSerial is a customized version and comes inside the library package.</p>
+<p>Obviously, you can't use SoftwareSerial when you use MWiFi.</p>
+<p>HTTP library, moreover, adds the http protocol management. Substantially, HTTP library has functions for managing http request and response.</p>
+<p>MWiFi function groups:</p>
+<ul>
+  <li>startup (begin)</li>
+  <li>connect to net</li>
+  <li>open socket (server or client)</li>
+  <li>write to socket </li>
+  <li>read from socket</li>
+  <li>close socket</li>
+  <li>get/set configuration</li>
+  </ul>
+<p>HTTP function groups (added to MWiFi functions):</p>
+<ul>
+  <li>get/send request (server/client)</li>
+  <li>send/get response (server/client)</li>
+  <li>send dynamic response (made there and then)</li>
+</ul>
+<p class='vspace'></p>
+<p>N.B. Library policy, in case of connection loss, resets Arduino, at present. (Same policy in case of severe error)</p>
+<p class='vspace'></p></td><td  width='10%' valign='top'>
+<p class='vspace'></p></td><td  width='35%' valign='top'>
+<p class='vspace'></p><h4>Introduction</h4>
+<ul>
+<li><a class='wikilink' href='MWiFi_info.html'>MWiFi</a></li>
+<li><a class='wikilink' href='MWiFi_HTTPinfo.html'>HTTP</a></li>
+<li><a class='wikilink' href='MWiFi_APISummary.html'>API Summary</a></li>
+</ul>
+<h4>MWiFi Functions</h4>
+<ul>
+<li><a class='wikilink' href='MWiFi_Begin.html'>begin</a>()</li>
+<li><a class='wikilink' href='MWiFi_Connection.html'>prepare&amp;connect</a></li>
+<li><a class='wikilink' href='MWiFi_Socket.html'>socket</a></li>
+<li><a class='wikilink' href='MWiFi_writeData.html'>writeData</a></li>
+<li><a class='wikilink' href='MWiFi_readData.html'>readData</a></li>
+<li><a class='wikilink' href='MWiFi_Config.html'>get&amp;setConfig</a></li>
+<li><a class='wikilink' href='MWiFi_Ping.html'>ping()</a></li>
+<li><a class='wikilink' href='MWiFi_Error.html'>Error magement</a></li>
+</ul>
+<h4>HTTP Functions</h4>
+<ul>
+<h5>Server</h5>
+<li><a class='wikilink' href='MWiFi_getRequest.html'>getRequest</a>() </li>
+<li><a class='wikilink' href='MWiFi_sendResponse.html'>sendResponse</a>()</li>
+<li><a class='wikilink' href='MWiFi_sendDynResponse.html'>sendDynResponse()</a></li>
+<h5>Client</h5>
+<li><a class='wikilink' href='MWiFi_sendRequest.html'>sendRequestGET/POST/PUT/DELETE</a></li>
+<li><a class='wikilink' href='MWiFi_getResponse.html'>getResponse()</a></li>
+</ul>
+<h4>MAIL</h4>
+<ul>
+  <li><a class='wikilink' href='MWiFi_Mail.html'>Mail functions</a></li></ul>
+<p class='vspace'></p><h4>Examples</h4>
+<ul>
+  <li><a class='wikilink' href='MWiFi_ExSendData.html'>Simple program</a>
+</li>
+  <li><a class='wikilink' href='MWiFi_ExCommandServer.html'>Commands Server</a>
+</li>
+  <li><a class='wikilink' href='MWiFi_ExHTTPClient.html'>Simple HTTPClient</a>
+</li>
+  <li><a class='wikilink' href='MWiFi_ExWebServer.html'>Simple WEB Server</a>
+</li>
+
+</ul>
+<p class='vspace'>For other programs see example directory (there is also a WEB server )</p></td></tr></table>
+<p><a class='wikilink' href='http://arduino.cc/en/Reference/HomePage'>Reference Home</a>
+</p>
+</div>
+
+
+  </div>
+
+  <!--PageFooterFmt-->
+  <div id="pagefooter">
+&copy;Arduino | 
+  <a href='#'>Edit Page</a> | <a href='#'>Page History</a> | <a href='#' target='_blank'>Printable View</a> | <a href='http://arduino.cc/en/Site/AllRecentChanges'>All Recent Site Changes</a>
+  </div>
+  <!--/PageFooterFmt-->
+
+</div>
+</body>
+</html>

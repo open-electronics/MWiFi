@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <title>HTTP Reference - info</title>
+  <link rel="shortcut icon" type="image/x-icon" href="http://arduino.cc/en/favicon.png">
+  <link rel='stylesheet' href='arduinoWideRender.css' 
+type='text/css' />
+    <!--HeaderText--><style type='text/css'><!--
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+  .editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border: 2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  td.markup1 { border-bottom: 1px solid #ccf; }
+  div.faq { margin-left:2em; }
+  div.faq p.question { margin: 1em 0 0.75em -2em; font-weight:bold; }
+  div.faq hr { margin-left: -2em; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+/**
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ */
+.arduino  {font-family:monospace;}
+.arduino .imp {font-weight: bold; color: red;}
+.arduino .kw1 {color: #CC6600;}
+.arduino .kw2 {color: #006699;}
+.arduino .kw3 {color: #CC6600; font-weight: bold;}
+.arduino .co1 {color: #7E7E7E; font-style: italic;}
+.arduino .co2 {color: #7E7E7E;}
+.arduino .coMULTI {color: #7E7E7E; font-style: italic;}
+.arduino .es0 {color: #000099; font-weight: bold;}
+.arduino .es1 {color: #000099; font-weight: bold;}
+.arduino .es2 {color: #660099; font-weight: bold;}
+.arduino .es3 {color: #660099; font-weight: bold;}
+.arduino .es4 {color: #660099; font-weight: bold;}
+.arduino .es5 {color: #006699; font-weight: bold;}
+.arduino .br0 {color: #000000;}
+.arduino .sy0 {color: #000000;}
+.arduino .st0 {color: #0066CC;}
+.arduino .nu0 {color: #000000;}
+.arduino .nu6 {color: #208080;}
+.arduino .nu8 {color: #208080;}
+.arduino .nu12 {color: #208080;}
+.arduino .nu16 {color:#800080;}
+.arduino .nu17 {color:#800080;}
+.arduino .nu18 {color:#800080;}
+.arduino .nu19 {color:#800080;}
+.arduino .me1 {color: #ff1493;}
+.arduino .me2 {color: #ff1493;}
+.arduino span.xtra { display:block; }
+
+.sourceblocklink {
+  text-align: right;
+  font-size: smaller;
+}
+.sourceblocktext {
+  padding: 0.5em;
+  color: #000000;
+  background-color: #ffffff;
+}
+.sourceblocktext div {
+  font-family: monospace;
+  font-size: small;
+  line-height: 1;
+  height: 1%;
+}
+.sourceblocktext div.head,
+.sourceblocktext div.foot {
+  font: italic medium serif;
+  padding: 0.5em;
+}
+
+--></style>  <meta name='robots' content='index,follow' />
+
+  <meta name="verify-v1" content="TtxFIEJAB6zdJ509wLxjnapQzKAMNm9u0Wj4ho6wxIY=" />
+</head>
+<body>
+<div id="page">
+  <!--PageHeaderFmt-->
+  <div id="pageheader">
+    <div class="title"><a href='http://arduino.cc/en'>Arduino</a></div>
+  </div>
+  <!--/PageHeaderFmt-->
+
+  <!--PageLeftFmt-->
+  <div id="pagenav">
+    <div id="navbar">
+  	<p><a class='wikilink' href='http://arduino.cc/en/Main/Buy'>Buy</a>
+<a class='wikilink' href='http://arduino.cc/en/Main/Software'>Download</a>
+<a class='wikilink' href='Guide_index.html'>Getting Started</a>
+<a class='wikilink' href='http://arduino.cc/en/Tutorial/HomePage'>Learning</a>
+<a class='wikilink' href='MWiFi.html'>Reference</a>
+<a class='wikilink' href='http://arduino.cc/en/Main/Hardware'>Hardware</a>
+<a class='wikilink' href='FAQ.html'>FAQ</a>
+</p>
+<p class='vspace'></p>
+
+    </div>
+  </div>
+  <!--/PageLeftFmt-->
+
+  <div id="pagetext">
+  <!--PageText-->
+<div id='wikitext'>
+<p class='vspace'></p>
+<a class='wikilink' href='MWiFi.html'>Reference Home</a>
+
+<h2>HTTP Library Introduction</h2>
+<p>This library has the purpose of drastically  reducing work when you are in WEB based programming activity.</p>
+<p>WEB communication is based on http protocol. This protocol is, essentially based on a couple of messages : a request and consequent response.</p>
+<p>&nbsp;</p>
+<p><img src="img/Http.png" width="756" height="348" alt="http protocoll" /></p>
+<p>&nbsp;</p>
+<p>Suppose we want to be a WEB server.</p>
+<p>First of all, we connect Arduino with the net. Then we act as a server socket and listen for incoming link. When link is accepted, we can start to listen for incoming request message.</p>
+<p>The function getRequest() do noting until a request message arrives.</p>
+<p>When request message arrives the function decodes header and detects the resource (URL) required. The resource names are automatically mapped with functions we have prepared.</p>
+<p>This map is done preparing an array of typedef WEBRES and provide this as argument of getRequest().</p>
+<p>WEBRES type is a struct of  resource-name,function-name coupled.</p>
+<p>So, if the name of resource (URL) required, matches one resource-name in the array, corresponding function is activated. In other case, a Resource not found message is automatically send as response.</p>
+<p>Function activated has access to a possible query string, and can decode parameters and its values.</p>
+<p>Function coupled with resource name <b>must</b> send a response.</p>
+<p>Response can be a html static page stored in PROGMEM space of Arduino, or a dynamic page stored in PROGMEM. Static page is a html text sent exactly like it. Dynamic page contains one or more tags @. Each tag is substitutes by a string in an array in sequential order.</p>
+<p>This array can be made at the moment of response, and has to be provided to the function sendDynResponse() as argument.</p>
+<p>Example:</p>
+<p>/**************************/</p>
+
+<pre>
+// we prepare links resouce-name-&gt;routine 
+WEBRES rs[]={{&quot;/index&quot;,pindex},{&quot;/Analog&quot;,panalog},{&quot;/RDigital&quot;,rdigital},<br />             {&quot;/WDigital&quot;,wdigital},{&quot;/wdig&quot;,wdig},{&quot;/Pwm&quot;,pwmpage},{&quot;/pwmset&quot;,pwmset}};
+/*****************************/
+void loop()                        // Arduino loop
+{
+   WIFI.getRequest(csocket,7,rs);  // if request arrives for resource &quot;http://...../Analog
+                                   // function panalog() is activated 
+}
+/*****************************/
+prog_char pageAnalog[] PROGMEM=    // html page containing a tag @
+&quot;&lt;html&gt;..........&quot;
+&quot;....A1 value = @.....&quot;
+&quot;......&lt;/hml&gt;&quot;;
+/*****************************/
+void panalog(char *query)                // routine activated by request of /Analog resource
+{
+    // if need function can retrive parameters and its value from string query
+    // using svpar=getParameter(query,querylength,parameter-name)
+    // prepare dynamic response making strings to substitute tag @
+    char sval[5];                         //buffer to hold analogic value of pin A1
+    sprintf(sval,&quot;%d&quot;,anlogRead(1));      //put integer value in sval as string
+    char *tags[1];                        //make an array of only one string (for semplicity)
+    tags[0]=sval;                         //put string value into the array
+    sendResponse(socket,pageAnalog,1,tags);//provide array (end length) to response function
+}                                         // function substitutes tag and send html page
+/*******************************/</pre>
+<p>If Arduino acts as client, it has to send request (mode GET ) with parameters and to listen for response.</p>
+<p>sendRequest() function as a string resource as argument. This query string is made by a resource-name+query-string.</p>
+<p>Example: /page1?par1=100&amp;par2=60</p>
+<p>Query string can by added to resource name manually or using the addParameter() function.</p>
+<p>Add parameter function decode automatically special characters and blank (see query format on the WEB)</p>
+<p>getResponse() function can return data sent in response message.</p>
+<p>&nbsp;</p>
+<p>See Also:</p>
+<h4>
+  <ul><li><a class='wikilink' href='MWiFi_info.html'>MWiFi introduction</a>
+</ul>
+ 
+  <a class='wikilink' href='MWiFi.html'>Reference Home</a></h4>
+</div>
+
+
+  </div>
+  
+
+  <!--PageFooterFmt-->
+  <div id="pagefooter">
+&copy;Arduino | 
+  <a href='Serial_Begin?action=edit.html'>Edit Page</a> | <a href='Serial_Begin?action=diff.html'>Page History</a> | <a href='Serial_Begin?action=print.html' target='_blank'>Printable View</a> | <a href='http://arduino.cc/en/Site/AllRecentChanges'>All Recent Site Changes</a>
+  </div>
+  <!--/PageFooterFmt-->
+
+</div>
+</body>
+</html>

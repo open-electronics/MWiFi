@@ -1,0 +1,358 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <title>MWiFi Reference - APISummary</title>
+  <link rel="shortcut icon" type="image/x-icon" href="http://arduino.cc/en/favicon.png">
+  <link rel='stylesheet' href='arduinoWideRender.css' 
+type='text/css' />
+    <!--HeaderText--><style type='text/css'><!--
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+  .editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border: 2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  td.markup1 { border-bottom: 1px solid #ccf; }
+  div.faq { margin-left:2em; }
+  div.faq p.question { margin: 1em 0 0.75em -2em; font-weight:bold; }
+  div.faq hr { margin-left: -2em; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+/**
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ */
+.arduino  {font-family:monospace;}
+.arduino .imp {font-weight: bold; color: red;}
+.arduino .kw1 {color: #CC6600;}
+.arduino .kw2 {color: #006699;}
+.arduino .kw3 {color: #CC6600; font-weight: bold;}
+.arduino .co1 {color: #7E7E7E; font-style: italic;}
+.arduino .co2 {color: #7E7E7E;}
+.arduino .coMULTI {color: #7E7E7E; font-style: italic;}
+.arduino .es0 {color: #000099; font-weight: bold;}
+.arduino .es1 {color: #000099; font-weight: bold;}
+.arduino .es2 {color: #660099; font-weight: bold;}
+.arduino .es3 {color: #660099; font-weight: bold;}
+.arduino .es4 {color: #660099; font-weight: bold;}
+.arduino .es5 {color: #006699; font-weight: bold;}
+.arduino .br0 {color: #000000;}
+.arduino .sy0 {color: #000000;}
+.arduino .st0 {color: #0066CC;}
+.arduino .nu0 {color: #000000;}
+.arduino .nu6 {color: #208080;}
+.arduino .nu8 {color: #208080;}
+.arduino .nu12 {color: #208080;}
+.arduino .nu16 {color:#800080;}
+.arduino .nu17 {color:#800080;}
+.arduino .nu18 {color:#800080;}
+.arduino .nu19 {color:#800080;}
+.arduino .me1 {color: #ff1493;}
+.arduino .me2 {color: #ff1493;}
+.arduino span.xtra { display:block; }
+
+.sourceblocklink {
+  text-align: right;
+  font-size: smaller;
+}
+.sourceblocktext {
+  padding: 0.5em;
+  color: #000000;
+  background-color: #ffffff;
+}
+.sourceblocktext div {
+  font-family: monospace;
+  font-size: small;
+  line-height: 1;
+  height: 1%;
+}
+.sourceblocktext div.head,
+.sourceblocktext div.foot {
+  font: italic medium serif;
+  padding: 0.5em;
+}
+
+--></style>  <meta name='robots' content='index,follow' />
+
+  <meta name="verify-v1" content="TtxFIEJAB6zdJ509wLxjnapQzKAMNm9u0Wj4ho6wxIY=" />
+</head>
+<body>
+<div id="page">
+  <!--PageHeaderFmt-->
+  <div id="pageheader">
+    <div class="title"><a href='http://arduino.cc/en'>Arduino</a></div>
+  </div>
+  <!--/PageHeaderFmt-->
+
+  <!--PageLeftFmt-->
+  <div id="pagenav">
+    <div id="navbar">
+<p>
+<a class='wikilink' href='http://arduino.cc/en/Main/Buy'>Buy</a>
+<a class='wikilink' href='http://arduino.cc/en/Main/Software'>Download</a>
+<a class='wikilink' href='http://arduino.cc/en/Guide/HomePage'>Getting Started</a>
+<a class='wikilink' href='http://arduino.cc/en/Tutorial/HomePage'>Learning</a>
+<a class='wikilink' href='MWiFi.html'>Reference</a>
+<a class='wikilink' href='http://arduino.cc/en/Main/Hardware'>Hardware</a>
+<a class='wikilink' href='FAQ.html'>FAQ</a>
+</p>
+<p class='vspace'></p>
+
+    </div>
+  </div>
+  <!--/PageLeftFmt-->
+
+  <div id="pagetext">
+  <!--PageText-->
+<div id='wikitext'>
+<a class='wikilink' href='MWiFi.html'>Reference Home</a>
+<h2>API Summary</h2>
+<h4>MWiFi</h4>
+<table border="1">
+  <tr>
+    <td><a href="MWiFi_Begin.html">void begin()</a></td>
+    <td>startup</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void getConfig()</a></td>
+    <td>reads configuration</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">uint8_t scanNets()</a></td>
+    <td>detects wifi networks </td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">char* getNetScanned(uint8_t num)</a></td>
+    <td>returns string with net info</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">char* getSSIDBestOpen(uint8_t totnets)</a></td>
+    <td>returns name of best open AP</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">char* existSSID(char *name)</a></td>
+    <td>returns data of name(AP) or null</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void setNetMode(uint8_t mode)</a></td>
+    <td>sets infrastucture/ad-hoc</td>
+  </tr>
+
+  <tr>
+    <td><a href="MWiFi_Connection.html">uint8_t ConnectOpen(char *ssid)</a></td>
+    <td>sets&connects open WIFI</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Connection.html">uint8_t ConnectWPAwithPSW(char *ssid, char *psw)</a></td>
+    <td>sets&connects WPA </td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Connection.html">uint8_t ConnectWPAandGetKey(char *ssid, char *psw, uint8_t key[32])</a></td>
+    <td>sets&connects and code key</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Connection.html">uint8_t ConnectWPAwithKey(char *ssid,uint8_t key[32])</a></td>
+    <td>sets&connects WPA with key</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Connection.html">uint8_t ConnectWPAandGetKeyEE(char *ssid, char *psw,int EEadd)</a></td>
+    <td>version with key stored on EEPROM (from EEadd)</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Connection.html">uint8_t ConnectWPAwithKeyEE(char *ssid,int EEadd)</a></td>
+    <td>version with key stored on EEPROM (from EEadd)</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Connection.html">void storeKeyOnEEPROM(uint8_t key[32],int EEadd)</a></td>
+    <td>stores key on EEPROM (33 bytes; 1 flag+ 32 key)(from EEadd)</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Connection.html">bool isKeyInEEPROM(int EEadd)</a></td>
+    <td>checks flag</td>
+  </tr>
+  <tr>
+    <td>
+    void ConnSetOpen(char *ssid)<br/>
+    void ConnSetWPA(char *ssid, uint8_t lssid, char *psw, uint8_t lpsw)<br/>
+    void ConnSetWPA(char *ssid, char *psw)<br/>
+    <a href="MWiFi_Connection.html">uint8_t Connect()</a><br/>
+    <td>outdated two times connection<br/>(setting and connection)</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Connection.html">uint8_t Disconnect()</a></td>
+    <td>disconnects</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Ping.html">uint8_t ping(char *ipremote)</a></td>
+    <td>pings</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Socket.html">uint8_t openSockTCP(char *ipremote,uint16_t port)</a></td>
+    <td>opens socket to</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Socket.html">uint8_t openServerTCP(uint16_t port)</a></td>
+    <td>opens server-socket</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Socket.html">uint8_t pollingAccept(uint8_t sock)</a></td>
+    <td>listens for incoming link</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_writeData.html">uint16_t writeData(uint8_t sk,uint8_t *buffer,uint16_t lbuff)</a><br/>        uint16_t writeData(uint8_t sk, char *buffer)<br/>
+        uint16_t writeDataLn(uint8_t sk, char *buffer)<br/>
+        uint16_t writeDataPM(uint8_t sk,prog_char *buffer,uint16_t lbuff)<br/>
+        uint16_t writeDataPM(uint8_t sk, prog_char *buffer)<br/>
+        uint16_t writeDataLnPM(uint8_t sk, prog_char *buffer)<br/>
+    <td>writes data<br/><br/>writes data from PROGMEM</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_readData.html">uint16_t readData(uint8_t sk,uint8_t *buffer,uint16_t lbuff)</a><br/>
+        char* readDataLn(uint8_t sk)</td>
+    <td>reads data<br/>reads record</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Socket.html">void closeSock(uint8_t sk)</a></td>
+    <td>closes socket</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void getMAC(char mac[18])</a></td>
+    <td>returns string MAC</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void getName(char name[8])</a></td>
+    <td>returns shield name</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void setIP(char *ip)</a></td>
+    <td>sets IP</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void getIP(char ip[16])</a></td>
+    <td>returns string IP</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void setIPdhcp()</a></td>
+    <td>sets mode dhcp</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void setNetMask(char *mask)</a></td>
+    <td>sets mask address</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void getNetMask(char mask[16])</a></td>
+    <td>returns string mask address</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void setGateway(char *gatw)</a></td>
+    <td>sets gateway address</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void getGateway(char gatw[16])</a></td>
+    <td>returns string gateway address</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void getRemoteIP(char remoteIP[16])</a></td>
+    <td>returns string remote IP</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void resetMCW()</a></td>
+    <td>resets MCW</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void setLed(int led,int state)</a></td>
+    <td>sets LEDs</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void setPowerOff()</a></td>
+    <td>switches off radio</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void setSavePower(int millis)</a></td>
+    <td>sets radio in PSPOLL</td>
+  </tr>
+  <tr>
+    <td><a href="MWiFi_Config.html">void setFullPower()</a></td>
+    <td>exits from save mode</td>
+  </tr>
+
+
+</table>
+<p>&nbsp;</p>
+<h4>HTTP</h4>
+<TABLE border="1">
+<tr><td><a href="MWiFi_getRequest.html">char* getRequest(int socket,int nres,WEBRES rs[])</a><br/>
+        char* getRequest(int socket,int nres,WEBRES rs[],char *key)</td>
+        <td>gets request from a client<br/>version vith authentication</td></tr>
+<tr>
+  <td><a href="MWiFi_getRequest.html">char* codeWebKey(char user[],char psw[])</a></td>
+  <td>gets key coding username and password</td></tr>
+<tr><td><a href="MWiFi_sendResponse.html">void sendResponse(int socket,prog_char *page)</a></td><td>sends response to a client</td></tr>
+<tr><td><a href="MWiFi_sendDynResponse.html">void sendDynResponse(int sk,prog_char *page,int npar,char *param[])</a></td><td>sends dynamic response</td></tr>
+<tr><td><a href="MWiFi_sendRequest.html">void sendRequestGET(int socket,char* resource)</a><br/>
+        void sendRequestGET(int sk,char* headers[],int nh,char* resource)</td>
+<td>sends GET request to a server<br/>version with headers array</td></tr>
+<tr><td><a href="MWiFi_sendRequest.html">void sendRequestPOST(int sk,char* resource,char* data)</a><br/>
+  <a href="MWiFi_sendRequest.html">void sendRequestPOST(int sk,char* headers[],int nh,char* resource,char* data)</a></td>
+<td>sends POST request to a server<br/>version with header array</td>
+<tr><td><a href="MWiFi_sendRequest.html">void sendRequestPUT(int socket,char* resource)</a><br/>
+        void sendRequestPUT(int sk,char* headers[],int nh,char* resource)</td>
+<td>sends PUT request to a server<br/>version with headers array</td></tr>
+<tr><td><a href="MWiFi_sendRequest.html">void sendRequestDELETE(int sk,char* resource,char* data)</a><br/>
+        void sendRequestDELETE(int sk,char* headers[],int nh,char* resource,char* data)</td>
+<td>sends DELETE request to a server<br/>version with header array</td>
+
+<tr><td><a href="MWiFi_getResponse.html">char* getResponse(int socket)</a></td><td>gets response from server</td></tr>
+<tr><td><a href="MWiFi_getResponse.html">unsigned int getResponse(int socket, uint8_t rbuff[], int rbufflen)</a></td><td>gets response from server using a user buffer</td></tr>
+<tr><td><a href="MWiFi_getResponse.html">unsigned int getNextResponseBuffer(int socket, uint8_t rbuff[], int rbufflen)</a></td><td>gets next data from response buffer</td></tr>
+<tr><td><a href="MWiFi_getResponse.html">char* getResponseMessage()</a></td><td>gets response protocol message</td></tr>
+
+<tr><td><a href="MWiFi_getRequest.html">char* getParameter(char *query,int qlen, char *name)</a></td><td>gets parameter</td></tr>
+<tr><td><a href="MWiFi_sendRequest.html">void addParameter(char *query, int querylen,char *name, char *value)</a></td><td>adds parameter</td></tr>
+<tr><td>void respOKempty(int sk)</td><td>just an ACK</td></tr><tr><td>void respERR(int sk)</td><td>response 500</td></tr>
+<tr><td>void respNOK(int sk)</td><td>response 404</td></tr>
+<tr><td>void respNoAuth(int sk)</td>
+<td>response 401</td></tr>
+</TABLE>
+<p>&nbsp;</p>
+<table width="601" border="1">
+  <tr>
+    <td width="194">typedef WEBRES</td>
+    <td width="391">&nbsp;</td>
+  </tr>
+  <tr>
+    <td>WEBRES.name</td>
+    <td>char pointer to the URI name</td>
+  </tr>
+  <tr>
+    <td>WEBRES.fun</td>
+    <td>name of callback function (pointer to function)</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<a class='wikilink' href='MWiFi.html'>Reference Home</a></div>
+</div>
+
+  <!--PageFooterFmt-->
+<div id="pagefooter">
+&copy;Arduino | 
+ <a href='Serial_Begin?action=edit.html'>Edit Page</a> | <a href='Serial_Begin?action=diff.html'>Page History</a> | <a href='Serial_Begin?action=print.html' target='_blank'>Printable View</a> | <a href='http://arduino.cc/en/Site/AllRecentChanges'>All Recent Site Changes</a>
+</div>
+  <!--/PageFooterFmt-->
+
+</div>
+</body>
+</html>

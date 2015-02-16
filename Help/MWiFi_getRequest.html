@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <title>HTTP Reference - getRequest</title>
+  <link rel="shortcut icon" type="image/x-icon" href="http://arduino.cc/en/favicon.png">
+  <link rel='stylesheet' href='arduinoWideRender.css' 
+type='text/css' />
+    <!--HeaderText--><style type='text/css'><!--
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+  .editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border: 2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  td.markup1 { border-bottom: 1px solid #ccf; }
+  div.faq { margin-left:2em; }
+  div.faq p.question { margin: 1em 0 0.75em -2em; font-weight:bold; }
+  div.faq hr { margin-left: -2em; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+/**
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ */
+.arduino  {font-family:monospace;}
+.arduino .imp {font-weight: bold; color: red;}
+.arduino .kw1 {color: #CC6600;}
+.arduino .kw2 {color: #006699;}
+.arduino .kw3 {color: #CC6600; font-weight: bold;}
+.arduino .co1 {color: #7E7E7E; font-style: italic;}
+.arduino .co2 {color: #7E7E7E;}
+.arduino .coMULTI {color: #7E7E7E; font-style: italic;}
+.arduino .es0 {color: #000099; font-weight: bold;}
+.arduino .es1 {color: #000099; font-weight: bold;}
+.arduino .es2 {color: #660099; font-weight: bold;}
+.arduino .es3 {color: #660099; font-weight: bold;}
+.arduino .es4 {color: #660099; font-weight: bold;}
+.arduino .es5 {color: #006699; font-weight: bold;}
+.arduino .br0 {color: #000000;}
+.arduino .sy0 {color: #000000;}
+.arduino .st0 {color: #0066CC;}
+.arduino .nu0 {color: #000000;}
+.arduino .nu6 {color: #208080;}
+.arduino .nu8 {color: #208080;}
+.arduino .nu12 {color: #208080;}
+.arduino .nu16 {color:#800080;}
+.arduino .nu17 {color:#800080;}
+.arduino .nu18 {color:#800080;}
+.arduino .nu19 {color:#800080;}
+.arduino .me1 {color: #ff1493;}
+.arduino .me2 {color: #ff1493;}
+.arduino span.xtra { display:block; }
+
+.sourceblocklink {
+  text-align: right;
+  font-size: smaller;
+}
+.sourceblocktext {
+  padding: 0.5em;
+  color: #000000;
+  background-color: #ffffff;
+}
+.sourceblocktext div {
+  font-family: monospace;
+  font-size: small;
+  line-height: 1;
+  height: 1%;
+}
+.sourceblocktext div.head,
+.sourceblocktext div.foot {
+  font: italic medium serif;
+  padding: 0.5em;
+}
+
+--></style>  <meta name='robots' content='index,follow' />
+
+  <meta name="verify-v1" content="TtxFIEJAB6zdJ509wLxjnapQzKAMNm9u0Wj4ho6wxIY=" />
+</head>
+<body>
+<div id="page">
+  <!--PageHeaderFmt-->
+  <div id="pageheader">
+    <div class="title"><a href='http://arduino.cc/en'>Arduino</a></div>
+  </div>
+  <!--/PageHeaderFmt-->
+
+  <!--PageLeftFmt-->
+  <div id="pagenav">
+    <div id="navbar">
+<p>
+<a class='wikilink' href='http://arduino.cc/en/Main/Buy'>Buy</a>
+<a class='wikilink' href='http://arduino.cc/en/Main/Software'>Download</a>
+<a class='wikilink' href='http://arduino.cc/en/Guide/HomePage'>Getting Started</a>
+<a class='wikilink' href='http://arduino.cc/en/Tutorial/HomePage'>Learning</a>
+<a class='wikilink' href='MWiFi.html'>Reference</a>
+<a class='wikilink' href='http://arduino.cc/en/Main/Hardware'>Hardware</a>
+<a class='wikilink' href='FAQ.html'>FAQ</a>
+</p>
+<p class='vspace'></p>
+
+    </div>
+  </div>
+  <!--/PageLeftFmt-->
+
+  <div id="pagetext">
+  <!--PageText-->
+<div id='wikitext'>
+<p class='vspace'></p>
+<a class='wikilink' href='MWiFi.html'>Reference Home</a>
+
+<h2>Get Request</h2>
+<h4>Description</h4>
+<p>Get request is a complex function that automates  management of the request arrived to our Arduino WEB server. It must be placed in the loop Arduino function for  requests polling.</p>
+<p>Each time a request comes in, the function selects the routine  that has to be activated.</p>
+<p>Afterwards function returns the resource name (URL) requested.</p>
+<p>Otherwise do noting and returns NULL.</p>
+<p>The match, between resource (URL) requested and routine, is done using an array of WEBRES typedef. Each WEBRES is a struct of two fields : resource name, routine name.</p>
+<p>Ex.: WEBRES ws={&quot;/index&quot;,mymenu} // where menu is the function mymenu()</p>
+<p>So an array of WEBRES looks like this:</p>
+<pre style="font-size:14px">WEBRES rs[7]={{"/index",pindex},{"/Analog",panalog},{"/RDigital",rdigital},
+             {"/WDigital",wdigital},{"/wdig",wdig},{"/Pwm",pwmpage},{"/pwmset",pwmset}};
+</pre>
+<p>&nbsp;</p>
+<p>Resource name (URL name) can't exceed 14 char (slash included) and the query string can't exceed 64 char. </p>
+<p>This array must by provided to getRequest function as argument.</p>
+<p>If request is come, but the matching doesn't have success, getRequest function automatically send a &quot;404 not found&quot; coded response, and returns NULL.</p>
+<p>The function activated by getRequest (callback function) <strong>must</strong> prepare and send response (see sendResponse function). Http protocol demands a mandatory response.</p>
+<p>If the request comes with a query string (parameters list), function activated can analyze it because query string is provided as argument in this call back engine.</p>
+<p>Parameters values can by retrieved from query string by getParameter function.</p>
+<h4>Syntax</h4>
+<p><strong>HTTP.getRequest(int socket,int dimrs,WEBRES rs)</strong></p>
+<p>In version 2.2 authentication (Basic) process has been added</p>
+<p><strong>HTTP.getRequest(int socket,int dimrs,WEBRES rs,char *webkey)</strong></p>
+<p>The webkey must be coded from username and password using codeWebKey() function.</p>
+<p>&nbsp;</p>
+<p><strong>HTTP.codeWebKey(char user[],char psw[])</strong></p>
+<p>&nbsp;</p>
+<h4>Parameters</h4>
+<p>socket : link socket</p>
+<p>dimres : dimension of WEBRES array </p>
+<p>rs : a WEBRES array</p>
+<p>user and password for codeWebKey function: null terminated string</p>
+<h4>Returns</h4>
+<p>pointer to a char string : resource name of request or NULL 
+</p>
+<p>codeWebKey returns a string pointer.</p>
+<p>&nbsp;</p>
+<p><strong>Callback function must have this format:</strong></p>
+<h4>Syntax</h4>
+<p>namefunction (char *query)</p>
+
+<h4>Parameters</h4>
+<p>pointer to a char string containing request parameters (provided by getRequest)</p>
+<h4>Returns</h4>
+<p>none , (type void) 
+</p>
+<p>&nbsp;</p>
+<p><strong>To retrieve request parameters (if any) you can use getParameter function</strong></p>
+<h4>Syntax</h4>
+<p><strong>getParameter(char *query,int querylen, char *parametername)</strong></p>
+
+<h4>Parameters</h4>
+<p>pointer to a char string (query) containing request parameters (provided by getRequest)</p>
+<p>length of string query</p>
+<p>name of parameter looked for</p>
+<h4>Returns</h4>
+<p>a pointer to char string contains value of parameter (as string) 
+</p>
+<p>or NULL if parameter is not found</p>
+
+
+<p class='vspace'></p><h3>Example:</h3>
+<p>
+<div class='sourceblock ' id='sourceblock1'>
+  <div class='sourceblocktext'><div class="arduino">
+    <p class="kw3">#include &lt;HTTPlib.h&gt; //library include</p>
+    <p>&nbsp;</p>
+    <p class="kw3">HTTP WIFI;            //instance of    HTTP (inherits any stuff of MWiFi)</p>
+    <p>&nbsp;</p>
+    <p>int ssocket;   //server socket</p>
+    <p>int csocket=0xFF; //communication socket</p>
+    <p>&nbsp;</p>
+    <p><span class="kw1">void</span> <span class="kw3">setup</span><span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span><br />
+      &nbsp; &nbsp; <span class="kw1">WIFI</span>.<span class="kw1">begin</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// startup shield</span><br />:<br />
+       <span class="kw1"> WIFI.ConnSetOpen(&quot;DLink-casa&quot;);</span></p>
+    <p class="kw1">int fc=WIFI.Connect();</p>
+    <p>:</p>
+    <p class="kw1">ssocket=WIFI.openServerTCP(5000);</p>
+    <p><br />
+      <span class="br0">&#125;</span></p>
+    <p>&nbsp;</p>
+    <p><span class="kw3">WEBRES rs[]={{&quot;/index&quot;,pindex},{&quot;/Analog&quot;,panalog},{&quot;/RDigital&quot;,rdigital},<br />
+  {&quot;/WDigital&quot;,wdigital},{&quot;/wdig&quot;,wdig},{&quot;/Pwm&quot;,pwmpage},{&quot;/pwmset&quot;,pwmset}};</span><br />
+<br />
+      <span class="kw1">void</span> <span class="kw3">loop</span><span class="br0">&#40;</span><span class="br0">&#41;</span> </p>
+    <p><span class="br0">&#123;</span></p>
+    <p>if (csocket==255) //don't poll if link already established</p>
+    <p>{</p>
+    <p class="kw1"> int s=WIFI.pollingAccept(ssocket);</p>
+    <p>if (s&lt;255) csocket=s;</p>
+    <p>}</p>
+    <p>if (csocket&lt;255) //only when link exists</p>
+    <p>{</p>
+    <p class="kw3">WIFI.getRequest(csocket,7,rs);</p>
+    <p>}</p>
+    <p><span class="br0">&#125;</span></p>
+    <p>&nbsp;</p>
+    <p class="kw3">void pindex(char *query) // callback function</p>
+    <p>{</p>
+    <p> makes response see sendResponse function</p>
+    <p>}</p>
+  </div></div>
+  <div class='sourceblocklink'></div>
+</div>
+
+</p>
+
+
+</p>
+<a class='wikilink' href='MWiFi.html'>Reference Home</a></div>
+
+
+  </div>
+
+  <!--PageFooterFmt-->
+<div id="pagefooter">
+&copy;Arduino | 
+ <a href='Serial_Begin?action=edit.html'>Edit Page</a> | <a href='Serial_Begin?action=diff.html'>Page History</a> | <a href='Serial_Begin?action=print.html' target='_blank'>Printable View</a> | <a href='http://arduino.cc/en/Site/AllRecentChanges'>All Recent Site Changes</a>
+</div>
+  <!--/PageFooterFmt-->
+
+</div>
+</body>
+</html>

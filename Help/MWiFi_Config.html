@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <title>MWiFi Reference - Begin</title>
+  <link rel="shortcut icon" type="image/x-icon" href="http://arduino.cc/en/favicon.png">
+  <link rel='stylesheet' href='arduinoWideRender.css' 
+type='text/css' />
+    <!--HeaderText--><style type='text/css'><!--
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+  .editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border: 2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  td.markup1 { border-bottom: 1px solid #ccf; }
+  div.faq { margin-left:2em; }
+  div.faq p.question { margin: 1em 0 0.75em -2em; font-weight:bold; }
+  div.faq hr { margin-left: -2em; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+/**
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ */
+.arduino  {font-family:monospace;}
+.arduino .imp {font-weight: bold; color: red;}
+.arduino .kw1 {color: #CC6600;}
+.arduino .kw2 {color: #006699;}
+.arduino .kw3 {color: #CC6600; font-weight: bold;}
+.arduino .co1 {color: #7E7E7E; font-style: italic;}
+.arduino .co2 {color: #7E7E7E;}
+.arduino .coMULTI {color: #7E7E7E; font-style: italic;}
+.arduino .es0 {color: #000099; font-weight: bold;}
+.arduino .es1 {color: #000099; font-weight: bold;}
+.arduino .es2 {color: #660099; font-weight: bold;}
+.arduino .es3 {color: #660099; font-weight: bold;}
+.arduino .es4 {color: #660099; font-weight: bold;}
+.arduino .es5 {color: #006699; font-weight: bold;}
+.arduino .br0 {color: #000000;}
+.arduino .sy0 {color: #000000;}
+.arduino .st0 {color: #0066CC;}
+.arduino .nu0 {color: #000000;}
+.arduino .nu6 {color: #208080;}
+.arduino .nu8 {color: #208080;}
+.arduino .nu12 {color: #208080;}
+.arduino .nu16 {color:#800080;}
+.arduino .nu17 {color:#800080;}
+.arduino .nu18 {color:#800080;}
+.arduino .nu19 {color:#800080;}
+.arduino .me1 {color: #ff1493;}
+.arduino .me2 {color: #ff1493;}
+.arduino span.xtra { display:block; }
+
+.sourceblocklink {
+  text-align: right;
+  font-size: smaller;
+}
+.sourceblocktext {
+  padding: 0.5em;
+  color: #000000;
+  background-color: #ffffff;
+}
+.sourceblocktext div {
+  font-family: monospace;
+  font-size: small;
+  line-height: 1;
+  height: 1%;
+}
+.sourceblocktext div.head,
+.sourceblocktext div.foot {
+  font: italic medium serif;
+  padding: 0.5em;
+}
+
+--></style>  <meta name='robots' content='index,follow' />
+
+  <meta name="verify-v1" content="TtxFIEJAB6zdJ509wLxjnapQzKAMNm9u0Wj4ho6wxIY=" />
+</head>
+<body>
+<div id="page">
+  <!--PageHeaderFmt-->
+  <div id="pageheader">
+    <div class="title"><a href='http://arduino.cc/en'>Arduino</a></div>
+  </div>
+  <!--/PageHeaderFmt-->
+
+  <!--PageLeftFmt-->
+  <div id="pagenav">
+    <div id="navbar">
+<p>
+<a class='wikilink' href='http://arduino.cc/en/Main/Buy'>Buy</a>
+<a class='wikilink' href='http://arduino.cc/en/Main/Software'>Download</a>
+<a class='wikilink' href='http://arduino.cc/en/Guide/HomePage'>Getting Started</a>
+<a class='wikilink' href='http://arduino.cc/en/Tutorial/HomePage'>Learning</a>
+<a class='wikilink' href='MWiFi.html'>Reference</a>
+<a class='wikilink' href='http://arduino.cc/en/Main/Hardware'>Hardware</a>
+<a class='wikilink' href='FAQ.html'>FAQ</a>
+</p>
+<p class='vspace'></p>
+
+    </div>
+  </div>
+  <!--/PageLeftFmt-->
+
+  <div id="pagetext">
+  <!--PageText-->
+<div id='wikitext'>
+<a class='wikilink' href='MWiFi.html'>Reference Home</a>
+
+
+ <h3>Get configuration,net scanning and setting</h3>
+<p>Get configuration reads MAC address of shield, the name of shield when connected, the net address MASK and the GATEWAY address and finally the IP address  and the STATUS global variable. IP address is not important when connected with an access point, because DHCP. </p>
+<p>STATUS variable old the connection status : 1 connected, 2 failed,3 temporally lost retrying, 4 reestablished,5 definitively lost.</p>
+<p>Several functions for getting and setting are listed later on.</p>
+
+<h4>Syntax</h4>
+<p><strong>MWiFi.getConfig()</strong></p>
+
+<h4>Parameters</h4>
+<p>none</p>
+<h4>Returns</h4>
+<p>none directly but puts several values into variables </p>
+<p>these variables can be retrieved using following functions</p>
+<p>MAC format &quot;xx.xx.xx.xx.xx&quot; (xx: hexadecimal)( 18 char max)</p>
+<p>IP,MASK,GATEWAY format &quot;n.n.n.n&quot; (16 char max)</p>
+<h4>Syntax</h4>
+<p><strong>MWiFi.getMAC(char mac[18]) </strong>// puts MAC into a buffer as string</p>
+<p><strong>MWiFi.getName(char name[8] )</strong>//puts shield net name to a string buffer</p>
+<p>Is the (computer) name visible from net (composed with some MAC bytes)</p>
+<p><strong>MWiFi.getIP(char ip[16])</strong> //puts ip into a buffer as string. Call after connection to have ip assigned.</p>
+<p><strong>MWiFi.setIP(char *ip) </strong>// only if you use static ip (switch to static ip mode)</p>
+<p><strong>WWiFi.setIPdhcp()</strong> //set dhcp mode (default) use only to reset to dhcp mode</p>
+<p><strong>MWiFi.getNetMask(char mask[16])</strong> // puts MASK address into a string buffer</p>
+<p><strong>MWiFi.setNetMask(char *mask)</strong></p>
+<p><strong>MWiFi.getGateway(char gateway[16]) </strong>//puts Gateway address into a string buffer</p>
+<p><strong>MWiFi.getRemoteIP(char remoteip[16])</strong> // puts ip of client after linking. Call after server has accepted link.</p>
+<p><strong>MWiFi.resetMCW() </strong>// just for eventuality</p>
+<p><strong>MWiFi.setLed(int nled,int state) </strong>//switch on/off (1/0) the led nled (nled: from 0 to 4)</p>
+<p>Be careful! Led 0 is used as flag for connection and led 1 is used as flag for link</p>
+<p><strong>MWiFi.setPowerOff() </strong>//switch off radio (shield can be waked-up only by begin() function)</p>
+<p><strong>MWiFi.setPowerSave(int millis) </strong>//in PSPOLL</p>
+<p><strong>MWiFi.setFullPower(int millis) </strong>//exits from power save mode</p>
+
+<p>&nbsp;</p>
+<p>Scanning functions can be used to detect WIFI visible hotspot.</p>
+<h4>Syntax</h4>
+<p><strong>MWiFi.scanNets()</strong> //scanning for visible hotspots</p>
+<h4>Parameters</h4>
+<p>none</p>
+<h4>Returns</h4>
+<p>total number of access point discovered (int).</p>
+<p>Details can be retrieved by following function</p>
+<h4>Syntax</h4>
+<p><strong>MWiFi.getNetScanned(int i)</strong> //get result of access point i</p>
+<h4>Parameters</h4>
+<p>access point index (in list prepared by scanNets() function)</p>
+<h4>Returns</h4>
+<p>Pointer to a string in this format:</p>
+<p>&quot;Net: name secure type rssi&quot;</p>
+<p>Where: </p>
+<p>-secure=OPEN/WAP/WAP2/WEP</p>
+<p>-type=Acc.P/AdHoc</p>
+<p>-rssi= integer (signal power)</p>
+<h4>Syntax</h4>
+<p><strong>MWiFi.getSSIDBestOpen(int totnet)</strong> //select the best open (no secure) net in terms of signal</p>
+<h4>Parameters</h4>
+<p>tot number of access point detected by scanNets() function</p>
+<h4>Returns</h4>
+<p>Pointer to a string name of best access point</p>
+<h4>Syntax</h4>
+<p><strong>MWiFi.existSSID(char *name)</strong> //verify if an Access Point is availabe</p>
+<h4>Parameters</h4>
+<p>name of AP</p>
+<h4>Returns</h4>
+<p>record with AP data (see getNetScanned) or null</p>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+   Next example demonstrates the use of some basic commands for MWiFi shield<br />
+    - startup<br />
+    - get default configuration<br />
+    - set some configuration value<br />
+    - scan wifi visible networks<br />
+    - select the best open (without password) access point in terms of radio signal (RSSI) (if any)<br />
+    - try to connect to this best access point (if any)<br />
+    - get the dynamic IP provided by the access point<br />
+    - close connection</li>
+
+
+ 
+  </span>
+</div>
+  </div>
+
+<h3>Example:</h3>
+
+<iframe src="img/getConfig.html"  width="800" height="1024"></iframe><br /><br /><br />
+<a class='wikilink' href='MWiFi.html'>Reference Home</a>
+
+</div> 
+</div></div>
+  <!--PageFooterFmt-->
+<div id="pagefooter">
+&copy;Arduino | 
+ <a href='Serial_Begin?action=edit.html'>Edit Page</a> | <a href='Serial_Begin?action=diff.html'>Page History</a> | <a href='Serial_Begin?action=print.html' target='_blank'>Printable View</a> | <a href='http://arduino.cc/en/Site/AllRecentChanges'>All Recent Site Changes</a>
+</div>
+  <!--/PageFooterFmt-->
+
+</div>
+</body>
+</html>

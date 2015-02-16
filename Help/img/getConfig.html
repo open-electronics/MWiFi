@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=windows-1250">
+  <meta name="generator" content="PSPad editor, www.pspad.com">
+  <title></title>
+  </head>
+  <body>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Untitled</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="SynEdit HTML exporter" />
+<style type="text/css">
+<!--
+body { color: #000000; background-color: #FFFFFF; }
+.cpp1-assembler { }
+.cpp1-brackets { }
+.cpp1-character { }
+.cpp1-comment { color: #008000; font-style: italic; }
+.cpp1-float { color: #000080; }
+.cpp1-hexadecimal { color: #000080; }
+.cpp1-identifier { }
+.cpp1-illegalchar { }
+.cpp1-number { color: #000080; }
+.cpp1-octal { color: #0000FF; }
+.cpp1-preprocessor { }
+.cpp1-reservedword { font-weight: bold; }
+.cpp1-space { color: #008080; }
+.cpp1-string { color: #800000; }
+.cpp1-symbol { }
+-->
+</style>
+</head>
+<body>
+<pre>
+<code><span style="font: 8pt Courier New;"><span class="cpp1-comment">/*
+* This example demonstrates the use of some basic commands for MWiFi shield
+* - startup
+* - get default configuration
+* - set some configuration value
+* - scan wifi visible networks
+* - select the best open (without password) accesspoint in terms of radio signal (RSSI) (if any)
+* - try to connect to this best accesspoint (if any)
+* - get the dynamic IP provided by the accesspoint
+* - close connection
+*
+* Author: Daniele Denaro
+*/
+
+
+</span><span class="cpp1-preprocessor">#include &lt;MWiFi.h&gt;             </span><span class="cpp1-comment">// include library
+
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">mac[</span><span class="cpp1-number">18</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                  </span><span class="cpp1-comment">// buffer for mac address of shield
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">name[</span><span class="cpp1-number">8</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                  </span><span class="cpp1-comment">// char for shield name on net
+
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">ip[</span><span class="cpp1-number">16</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                   </span><span class="cpp1-comment">// buffer for ip address
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">mask[</span><span class="cpp1-number">16</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                 </span><span class="cpp1-comment">// buffer for mask address
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">gateway[</span><span class="cpp1-number">16</span><span class="cpp1-brackets">];</span><span class="cpp1-space">              </span><span class="cpp1-comment">// buffer for gateway
+
+</span><span class="cpp1-identifier">MWiFi</span><span class="cpp1-space"> </span><span class="cpp1-identifier">WIFI;</span><span class="cpp1-space">                    </span><span class="cpp1-comment">//instance of MWiFi library
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">setup()</span><span class="cpp1-space"> 
+</span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.begin(</span><span class="cpp1-number">9600</span><span class="cpp1-brackets">);
+
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.begin();</span><span class="cpp1-space">                </span><span class="cpp1-comment">// startup wifi shield
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">WIFI.getConfig();</span><span class="cpp1-space">            </span><span class="cpp1-comment">// reads default info from shield
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.getMAC(mac);</span><span class="cpp1-space">            </span><span class="cpp1-comment">// gets string mac of shield
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.getName(name);</span><span class="cpp1-space">          </span><span class="cpp1-comment">// gets name of shield on net 
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.getNetMask(mask);</span><span class="cpp1-space">       </span><span class="cpp1-comment">// gets dafault mask
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.getGateway(gateway);</span><span class="cpp1-space">    </span><span class="cpp1-comment">// gets default gateway
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-comment">// print information on console
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;MAC: &quot;</span><span class="cpp1-brackets">);Serial.println(mac);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;Name: &quot;</span><span class="cpp1-brackets">);Serial.println(name);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;MASK: &quot;</span><span class="cpp1-brackets">);Serial.println(mask);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;GATEWAY: &quot;</span><span class="cpp1-brackets">);Serial.println(gateway);
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">WIFI.setNetMask(</span><span class="cpp1-string">&quot;255.255.255.0&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-space">  </span><span class="cpp1-comment">//modify default
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.setGateway(</span><span class="cpp1-string">&quot;0.0.0.0&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-space">        </span><span class="cpp1-comment">//modify default
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.println(</span><span class="cpp1-string">&quot;New mask: 255.255.255.0&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.println(</span><span class="cpp1-string">&quot;New gateway: 0.0.0.0&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">nn=WIFI.scanNets();</span><span class="cpp1-space">        </span><span class="cpp1-comment">// scans visible networks. nn is the number of nets found
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;Found &quot;</span><span class="cpp1-brackets">);Serial.print(nn);Serial.println(</span><span class="cpp1-string">&quot; nets&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">i;
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">for</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(i=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;i&lt;nn;i++)</span><span class="cpp1-space">             </span><span class="cpp1-comment">// displays values for each net (name,security type,access type,RSSI)
+</span><span class="cpp1-space">  </span><span class="cpp1-brackets">{</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">char</span><span class="cpp1-symbol">*</span><span class="cpp1-space"> </span><span class="cpp1-identifier">net=WIFI.getNetScanned(i);</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(net!=NULL);</span><span class="cpp1-space"> </span><span class="cpp1-identifier">Serial.println(net);}
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">Serial.println(</span><span class="cpp1-string">&quot;Try to get the best open access point&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*nameAccP=NULL;</span><span class="cpp1-space">           </span><span class="cpp1-comment">// access point (SSID) name initialising
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">nameAccP=WIFI.getSSIDBestOpen(nn);</span><span class="cpp1-space"> </span><span class="cpp1-comment">//selects the best open access point (if any) 
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-reservedword">if</span><span class="cpp1-brackets">(nameAccP!=NULL)
+</span><span class="cpp1-space">  </span><span class="cpp1-brackets">{Serial.print(</span><span class="cpp1-string">&quot;Best open access point is : &quot;</span><span class="cpp1-brackets">);Serial.println(nameAccP);}
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">else
+</span><span class="cpp1-space">  </span><span class="cpp1-brackets">{Serial.println(</span><span class="cpp1-string">&quot;Open access point not found!&quot;</span><span class="cpp1-brackets">);}
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fc=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;</span><span class="cpp1-space">                      </span><span class="cpp1-comment">// flag connection. Connected when = 1
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-reservedword">if</span><span class="cpp1-brackets">(nameAccP!=NULL)
+</span><span class="cpp1-space">  </span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">    </span><span class="cpp1-identifier">WIFI.ConnSetOpen(nameAccP);</span><span class="cpp1-space">  </span><span class="cpp1-comment">// prepare connection
+</span><span class="cpp1-space">    </span><span class="cpp1-identifier">fc=WIFI.Connect();</span><span class="cpp1-space">           </span><span class="cpp1-comment">// connect command (if OK fc=1)
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fc)
+</span><span class="cpp1-space">    </span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">WIFI.getIP(ip);</span><span class="cpp1-space">            </span><span class="cpp1-comment">// if connected load ip buffer with new IP from net (dynamic IP)
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;Connected with &quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">Serial.print(nameAccP);
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot; new IP is : &quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">Serial.println(ip);
+</span><span class="cpp1-space">    </span><span class="cpp1-brackets">}
+</span><span class="cpp1-space">  </span><span class="cpp1-brackets">}</span><span class="cpp1-space"> 
+  
+  </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fc)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{delay(</span><span class="cpp1-number">5000</span><span class="cpp1-brackets">);</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fc=WIFI.Disconnect();}</span><span class="cpp1-space"> </span><span class="cpp1-comment">// just to demonstrate connection process
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fc==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{Serial.println();Serial.println(</span><span class="cpp1-string">&quot;Disconnected !&quot;</span><span class="cpp1-brackets">);}
+}
+
+</span><span class="cpp1-space"> 
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">loop()</span><span class="cpp1-space"> 
+</span><span class="cpp1-brackets">{
+}
+
+
+
+</span></span>
+</code></pre>
+</body>
+</html>
+  </body>
+</html>

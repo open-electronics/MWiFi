@@ -1,0 +1,255 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=windows-1250">
+  <meta name="generator" content="PSPad editor, www.pspad.com">
+  <title></title>
+  </head>
+  <body>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Untitled</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="SynEdit HTML exporter" />
+<style type="text/css">
+<!--
+body { color: #000000; background-color: #FFFFFF; }
+.cpp1-assembler { }
+.cpp1-brackets { }
+.cpp1-character { }
+.cpp1-comment { color: #008000; font-style: italic; }
+.cpp1-float { color: #000080; }
+.cpp1-hexadecimal { color: #000080; }
+.cpp1-identifier { }
+.cpp1-illegalchar { }
+.cpp1-number { color: #000080; }
+.cpp1-octal { color: #0000FF; }
+.cpp1-preprocessor { }
+.cpp1-reservedword { font-weight: bold; }
+.cpp1-space { color: #008080; }
+.cpp1-string { color: #800000; }
+.cpp1-symbol { }
+-->
+</style>
+</head>
+<body>
+<pre>
+<code><span style="font: 8pt Courier New;"><span class="cpp1-comment">/*
+* This example demonstrates the use of socket as server to write and read to a client 
+* after accepting connection .
+* Just load program on Arduino end use telnet program from pc for commnication.
+* on setup
+* - startup
+* - connect to access point
+* - set as server listening on port . 
+* on loop
+* - test if someone asks for connection on port 
+* - if server accepts connection start to manage incoming records
+* - commands parsing end execution
+*
+* Use any kind of telnet program on pc to connect.
+* Windows telnet is not very confortable (and in any case you have to unset local echo and set  record mode)
+* You can use Putty or oter software. But in any case a simple Java program (socketClient.jar) is provided.
+*
+* Author: Daniele Denaro
+*/
+
+
+</span><span class="cpp1-preprocessor">#include &lt;MWiFi.h&gt;             </span><span class="cpp1-comment">// include library
+
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">nameAccP[]=</span><span class="cpp1-string">&quot;D-Link-casa&quot;</span><span class="cpp1-symbol">;</span><span class="cpp1-space">  </span><span class="cpp1-comment">// change for local accessible access point
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">passw[]=</span><span class="cpp1-string">&quot;&quot;</span><span class="cpp1-symbol">;</span><span class="cpp1-space">                </span><span class="cpp1-comment">// empty if OPEN connection or password if WAP connection
+
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">mac[</span><span class="cpp1-number">18</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                  </span><span class="cpp1-comment">// buffer for mac address of shield
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">name[</span><span class="cpp1-number">8</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                  </span><span class="cpp1-comment">// char for shield name on net
+
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">ip[</span><span class="cpp1-number">16</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                   </span><span class="cpp1-comment">// buffer for ip address
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">remip[</span><span class="cpp1-number">16</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                   </span><span class="cpp1-comment">// buffer for ip address
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">mask[</span><span class="cpp1-number">16</span><span class="cpp1-brackets">];</span><span class="cpp1-space">                 </span><span class="cpp1-comment">// buffer for mask address
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">gateway[</span><span class="cpp1-number">16</span><span class="cpp1-brackets">];</span><span class="cpp1-space">              </span><span class="cpp1-comment">// buffer for gateway
+
+</span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fc=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;</span><span class="cpp1-space">                      </span><span class="cpp1-comment">// flag connection
+</span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fs=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;</span><span class="cpp1-space">                      </span><span class="cpp1-comment">// flag socket open
+</span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">ssocket;</span><span class="cpp1-space">                   </span><span class="cpp1-comment">// server socket handle
+</span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">csocket;</span><span class="cpp1-space">                   </span><span class="cpp1-comment">// client socket handle
+</span><span class="cpp1-reservedword">unsigned</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">port=</span><span class="cpp1-number">5000</span><span class="cpp1-symbol">;</span><span class="cpp1-space">        </span><span class="cpp1-comment">// port number for TCP connection
+
+</span><span class="cpp1-identifier">MWiFi</span><span class="cpp1-space"> </span><span class="cpp1-identifier">WIFI;</span><span class="cpp1-space">                    </span><span class="cpp1-comment">//instance of MWiFi library
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">setup()</span><span class="cpp1-space"> 
+</span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.begin(</span><span class="cpp1-number">9600</span><span class="cpp1-brackets">);
+
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.begin();</span><span class="cpp1-space">                </span><span class="cpp1-comment">// startup wifi shield
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">WIFI.getConfig();</span><span class="cpp1-space">            </span><span class="cpp1-comment">// reads default info from shield
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.getMAC(mac);</span><span class="cpp1-space">            </span><span class="cpp1-comment">// gets string mac of shield
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.getName(name);</span><span class="cpp1-space">          </span><span class="cpp1-comment">// gets name of shield on net 
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-comment">// print information on console
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;MAC: &quot;</span><span class="cpp1-brackets">);Serial.println(mac);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;Name: &quot;</span><span class="cpp1-brackets">);Serial.println(name);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;MCW Version (hex)  : &quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(WIFI.MCWVERSION[</span><span class="cpp1-number">1</span><span class="cpp1-brackets">],HEX);Serial.print(</span><span class="cpp1-string">&quot; &quot;</span><span class="cpp1-brackets">);Serial.println(WIFI.MCWVERSION[</span><span class="cpp1-number">0</span><span class="cpp1-brackets">],HEX);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;Radio Version (hex): &quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(WIFI.RADIOVERSION[</span><span class="cpp1-number">1</span><span class="cpp1-brackets">],HEX);Serial.print(</span><span class="cpp1-string">&quot; &quot;</span><span class="cpp1-brackets">);Serial.println(WIFI.RADIOVERSION[</span><span class="cpp1-number">0</span><span class="cpp1-brackets">],HEX);
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">WIFI.setNetMask(</span><span class="cpp1-string">&quot;255.255.255.0&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-space">  </span><span class="cpp1-comment">//modify default
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">WIFI.setGateway(</span><span class="cpp1-string">&quot;0.0.0.0&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-space">        </span><span class="cpp1-comment">//modify default
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.println(</span><span class="cpp1-string">&quot;New mask: 255.255.255.0&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.println(</span><span class="cpp1-string">&quot;New gateway: 0.0.0.0&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(passw[</span><span class="cpp1-number">0</span><span class="cpp1-brackets">]==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.ConnSetOpen(nameAccP);}</span><span class="cpp1-space">      </span><span class="cpp1-comment">// if passw= empty string connect in open mode
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">else</span><span class="cpp1-space">             </span><span class="cpp1-brackets">{WIFI.ConnSetWPA(nameAccP,passw);}</span><span class="cpp1-space"> </span><span class="cpp1-comment">// else connect in WAP mode
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">fc=WIFI.Connect();</span><span class="cpp1-space">             </span><span class="cpp1-comment">// try to connect
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(!fc)</span><span class="cpp1-space">                       </span><span class="cpp1-comment">// end if no connection 
+</span><span class="cpp1-space">  </span><span class="cpp1-brackets">{Serial.print(</span><span class="cpp1-string">&quot;Can't connect to &quot;</span><span class="cpp1-brackets">);Serial.print(nameAccP);Serial.println(</span><span class="cpp1-string">&quot;. Do nothing&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">WIFI.getIP(ip);</span><span class="cpp1-space">                </span><span class="cpp1-comment">// get dynamic ip
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;Connected with &quot;</span><span class="cpp1-brackets">);Serial.print(nameAccP);
+</span><span class="cpp1-space">  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot; local ip is: &quot;</span><span class="cpp1-brackets">);Serial.println(ip);
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">ssocket=WIFI.openServerTCP(port);</span><span class="cpp1-comment">// open server socket. Listen for connection from remote (just one connection)
+</span><span class="cpp1-space">                                  </span><span class="cpp1-comment">// we must poll in loop routine to see if connection asked from remote
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(ssocket==</span><span class="cpp1-number">255</span><span class="cpp1-brackets">)</span><span class="cpp1-space">                </span><span class="cpp1-comment">//socket non valid. No server open. 
+</span><span class="cpp1-space">  </span><span class="cpp1-brackets">{WIFI.Disconnect();fc=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;Serial.println(</span><span class="cpp1-string">&quot;Socket problem. Disconnected! Do nothing&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}
+</span><span class="cpp1-space">  
+  </span><span class="cpp1-identifier">Serial.print(</span><span class="cpp1-string">&quot;Server active on port &quot;</span><span class="cpp1-brackets">);Serial.println(port);
+</span><span class="cpp1-space">  </span><span class="cpp1-comment">//end of server startup 
+</span><span class="cpp1-brackets">}</span><span class="cpp1-space"> 
+  
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">loop()</span><span class="cpp1-space"> 
+</span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">  </span><span class="cpp1-reservedword">if</span><span class="cpp1-brackets">(fc)</span><span class="cpp1-space">                           </span><span class="cpp1-comment">//if server active
+</span><span class="cpp1-space">  </span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(!fs)</span><span class="cpp1-space">                       </span><span class="cpp1-comment">//if no yet connection request on port port
+</span><span class="cpp1-space">    </span><span class="cpp1-brackets">{</span><span class="cpp1-space">                              </span><span class="cpp1-comment">// verify if someone asks for connection on port por
+</span><span class="cpp1-space">      </span><span class="cpp1-identifier">csocket=WIFI.pollingAccept(ssocket);</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">if</span><span class="cpp1-brackets">(csocket&lt;</span><span class="cpp1-number">255</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fs=</span><span class="cpp1-number">1</span><span class="cpp1-symbol">;</span><span class="cpp1-space"> </span><span class="cpp1-comment">//csoccket is the client socket to communicate
+</span><span class="cpp1-space">      </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fs)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{Serial.print(</span><span class="cpp1-string">&quot;Server connected with : &quot;</span><span class="cpp1-brackets">);WIFI.getRemoteIP(remip);Serial.println(remip);}
+</span><span class="cpp1-space">    </span><span class="cpp1-brackets">}
+</span><span class="cpp1-space">    </span><span class="cpp1-reservedword">else</span><span class="cpp1-space">                           </span><span class="cpp1-comment">// connection established
+</span><span class="cpp1-space">    </span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">      </span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*line=WIFI.readDataLn(csocket);</span><span class="cpp1-space">       </span><span class="cpp1-comment">//try to read a record (data termined by line feed \n
+</span><span class="cpp1-space">      </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(line!=NULL)</span><span class="cpp1-space">                            </span><span class="cpp1-comment">//if received
+</span><span class="cpp1-space">          </span><span class="cpp1-brackets">{
+</span><span class="cpp1-space">            </span><span class="cpp1-identifier">decodeCommand(line);</span><span class="cpp1-space">                 </span><span class="cpp1-comment">//call routine to decode and execute command
+</span><span class="cpp1-space">          </span><span class="cpp1-brackets">}</span><span class="cpp1-space"> 
+    </span><span class="cpp1-brackets">}
+</span><span class="cpp1-space">  </span><span class="cpp1-brackets">}
+}
+
+</span><span class="cpp1-comment">/* Command format (token space separated): commandname          */
+/*                                         commandname data     */
+/*                                         commandname data data*/
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">decodeCommand(</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*line)
+{
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">command[</span><span class="cpp1-number">15</span><span class="cpp1-brackets">]=</span><span class="cpp1-string">&quot;&quot;</span><span class="cpp1-symbol">;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">data1[</span><span class="cpp1-number">15</span><span class="cpp1-brackets">]=</span><span class="cpp1-string">&quot;&quot;</span><span class="cpp1-symbol">;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">data2[</span><span class="cpp1-number">15</span><span class="cpp1-brackets">]=</span><span class="cpp1-string">&quot;&quot;</span><span class="cpp1-symbol">;
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">sscanf(line,</span><span class="cpp1-string">&quot;%14s %14s %14s&quot;</span><span class="cpp1-symbol">,command,data1,data2);</span><span class="cpp1-space">                  </span><span class="cpp1-comment">//read line and tokenize
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">((strlen(command)==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)|(strcmp(command,</span><span class="cpp1-string">&quot;?&quot;</span><span class="cpp1-brackets">)==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">))</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{help();</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}</span><span class="cpp1-space"> </span><span class="cpp1-comment">//if no command or ? help
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(strcmp(command,</span><span class="cpp1-string">&quot;RAnalog&quot;</span><span class="cpp1-brackets">)==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space">  </span><span class="cpp1-brackets">{ranalog(data1);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}</span><span class="cpp1-space">         </span><span class="cpp1-comment">//Comand routines
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(strcmp(command,</span><span class="cpp1-string">&quot;RDigital&quot;</span><span class="cpp1-brackets">)==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{rdigital(data1);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(strcmp(command,</span><span class="cpp1-string">&quot;WAnalog&quot;</span><span class="cpp1-brackets">)==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space">  </span><span class="cpp1-brackets">{wanalog(data1,data2);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(strcmp(command,</span><span class="cpp1-string">&quot;WDigital&quot;</span><span class="cpp1-brackets">)==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{wdigital(data1,data2);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(strcmp(command,</span><span class="cpp1-string">&quot;SetPin&quot;</span><span class="cpp1-brackets">)==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space">   </span><span class="cpp1-brackets">{pinset(data1,data2);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(strcmp(command,</span><span class="cpp1-string">&quot;CloseConn&quot;</span><span class="cpp1-brackets">)==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">){WIFI.closeSock(csocket);fs=</span><span class="cpp1-reservedword">false</span><span class="cpp1-symbol">;</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}
+}
+
+
+</span><span class="cpp1-comment">/************************ command functions ******************************/
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">pinErr[]=</span><span class="cpp1-string">&quot;Pin number incorrect! Ana(0-5);Dig(4-13)(no7);Pwm(5,6,9,10,11)\r&quot;</span><span class="cpp1-symbol">;
+</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-identifier">answer[</span><span class="cpp1-number">50</span><span class="cpp1-brackets">];
+</span><span class="cpp1-space">  
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">ranalog(</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*data)
+{
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fok;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">pin;
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">fok=sscanf(data,</span><span class="cpp1-string">&quot;%d&quot;</span><span class="cpp1-symbol">,&amp;pin);</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fok==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.writeDataLn(csocket,pinErr);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}</span><span class="cpp1-space"> </span><span class="cpp1-comment">//string to int
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">((pin&lt;</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)|(pin&gt;</span><span class="cpp1-number">5</span><span class="cpp1-brackets">))</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.writeDataLn(csocket,pinErr);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">sprintf(answer,</span><span class="cpp1-string">&quot;Analog pin %d : %d\r&quot;</span><span class="cpp1-symbol">,pin,analogRead(pin));
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,answer);</span><span class="cpp1-space">                                                  </span><span class="cpp1-comment">//answer
+</span><span class="cpp1-brackets">}
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">rdigital(</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*data)
+{
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fok;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">pin;
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">fok=sscanf(data,</span><span class="cpp1-string">&quot;%d&quot;</span><span class="cpp1-symbol">,&amp;pin);</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fok&lt;=</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.writeDataLn(csocket,pinErr);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}</span><span class="cpp1-space"> 
+   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">((pin&lt;</span><span class="cpp1-number">4</span><span class="cpp1-brackets">)|(pin&gt;</span><span class="cpp1-number">13</span><span class="cpp1-brackets">))</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.writeDataLn(csocket,pinErr);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">sprintf(answer,</span><span class="cpp1-string">&quot;Digital pin %d : %d\r&quot;</span><span class="cpp1-symbol">,pin,digitalRead(pin));
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,answer);
+}
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">wdigital(</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*data1,</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*data2)
+{
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fok;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">pin;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val;
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">fok=sscanf(data1,</span><span class="cpp1-string">&quot;%d&quot;</span><span class="cpp1-symbol">,&amp;pin);</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fok&lt;=</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.writeDataLn(csocket,pinErr);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}</span><span class="cpp1-space"> 
+   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">((pin&lt;</span><span class="cpp1-number">4</span><span class="cpp1-brackets">)|(pin&gt;</span><span class="cpp1-number">13</span><span class="cpp1-brackets">)|(pin==</span><span class="cpp1-number">7</span><span class="cpp1-brackets">))</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.writeDataLn(csocket,pinErr);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">fok=sscanf(data2,</span><span class="cpp1-string">&quot;%d&quot;</span><span class="cpp1-symbol">,&amp;val);</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fok&lt;=</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.writeDataLn(csocket,</span><span class="cpp1-string">&quot;No value!\r&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}</span><span class="cpp1-space"> 
+   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(val&lt;</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;</span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(val&gt;</span><span class="cpp1-number">1</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val=</span><span class="cpp1-number">1</span><span class="cpp1-symbol">;
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">digitalWrite(pin,val);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">sprintf(answer,</span><span class="cpp1-string">&quot;Digital pin %d set to %d \r&quot;</span><span class="cpp1-symbol">,pin,val);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,answer);
+}
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">wanalog(</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*data1,</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*data2)
+{
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fok;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">pin;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val;
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">fok=sscanf(data1,</span><span class="cpp1-string">&quot;%d&quot;</span><span class="cpp1-symbol">,&amp;pin);</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fok&lt;=</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.writeDataLn(csocket,pinErr);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}</span><span class="cpp1-space"> 
+   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">((pin!=</span><span class="cpp1-number">5</span><span class="cpp1-brackets">)&amp;(pin!=</span><span class="cpp1-number">6</span><span class="cpp1-brackets">)&amp;(pin!=</span><span class="cpp1-number">9</span><span class="cpp1-brackets">)&amp;(pin!=</span><span class="cpp1-number">10</span><span class="cpp1-brackets">)&amp;(pin!=</span><span class="cpp1-number">11</span><span class="cpp1-brackets">))</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.writeDataLn(csocket,pinErr);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">fok=sscanf(data2,</span><span class="cpp1-string">&quot;%d&quot;</span><span class="cpp1-symbol">,&amp;val);</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fok&lt;=</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.writeDataLn(csocket,</span><span class="cpp1-string">&quot;No value!\r&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}</span><span class="cpp1-space"> 
+   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(val&lt;</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;</span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(val&gt;</span><span class="cpp1-number">1024</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val=</span><span class="cpp1-number">1024</span><span class="cpp1-symbol">;
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">analogWrite(pin,val);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">sprintf(answer,</span><span class="cpp1-string">&quot;Pwm pin %d set to %d \r&quot;</span><span class="cpp1-symbol">,pin,val);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,answer);
+}
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">pinset(</span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*data1,</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">char</span><span class="cpp1-space"> </span><span class="cpp1-symbol">*data2)
+{</span><span class="cpp1-space"> 
+   </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">fok;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">pin;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">int</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val;
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">fok=sscanf(data1,</span><span class="cpp1-string">&quot;%d&quot;</span><span class="cpp1-symbol">,&amp;pin);</span><span class="cpp1-space"> </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(fok&lt;=</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.writeDataLn(csocket,pinErr);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}</span><span class="cpp1-space"> 
+   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">((pin&lt;</span><span class="cpp1-number">4</span><span class="cpp1-brackets">)|(pin&gt;</span><span class="cpp1-number">13</span><span class="cpp1-brackets">))</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.writeDataLn(csocket,pinErr);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">val=-</span><span class="cpp1-number">1</span><span class="cpp1-symbol">;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(strcmp(data2,</span><span class="cpp1-string">&quot;INPUT&quot;</span><span class="cpp1-brackets">)==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val=</span><span class="cpp1-number">0</span><span class="cpp1-symbol">;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(strcmp(data2,</span><span class="cpp1-string">&quot;OUTPUT&quot;</span><span class="cpp1-brackets">)==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val=</span><span class="cpp1-number">1</span><span class="cpp1-symbol">;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(strcmp(data2,</span><span class="cpp1-string">&quot;INPUT_PULLUP&quot;</span><span class="cpp1-brackets">)==</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-identifier">val=</span><span class="cpp1-number">2</span><span class="cpp1-symbol">;
+</span><span class="cpp1-space">   </span><span class="cpp1-reservedword">if</span><span class="cpp1-space"> </span><span class="cpp1-brackets">(val&lt;</span><span class="cpp1-number">0</span><span class="cpp1-brackets">)</span><span class="cpp1-space"> </span><span class="cpp1-brackets">{WIFI.writeDataLn(csocket,</span><span class="cpp1-string">&quot;No valid option!\r&quot;</span><span class="cpp1-brackets">);</span><span class="cpp1-reservedword">return</span><span class="cpp1-symbol">;}</span><span class="cpp1-space"> 
+   </span><span class="cpp1-identifier">pinMode(pin,val);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">sprintf(answer,</span><span class="cpp1-string">&quot;Digital pin %d set to %s \r&quot;</span><span class="cpp1-symbol">,pin,data2);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,answer);</span><span class="cpp1-space">  
+</span><span class="cpp1-brackets">}
+
+</span><span class="cpp1-reservedword">void</span><span class="cpp1-space"> </span><span class="cpp1-identifier">help()
+{
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,</span><span class="cpp1-string">&quot;* Network commands program\r&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,</span><span class="cpp1-string">&quot;* Use: send line with command and data\r&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,</span><span class="cpp1-string">&quot;* Commands availlable:\r&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,</span><span class="cpp1-string">&quot;*   RAnalog  pin  Es.: RAnalog 3\r&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,</span><span class="cpp1-string">&quot;*   RDigital pin\r&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,</span><span class="cpp1-string">&quot;*   WAnalog  pin  val\r&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,</span><span class="cpp1-string">&quot;*   WDigital pin  val\r&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,</span><span class="cpp1-string">&quot;*   SetPin   pin  mode(INPUT/OUTPUT/INPUT_PULLUP)\r&quot;</span><span class="cpp1-brackets">);
+</span><span class="cpp1-space">   </span><span class="cpp1-identifier">WIFI.writeDataLn(csocket,</span><span class="cpp1-string">&quot;*   CloseConn\r\n******\r&quot;</span><span class="cpp1-brackets">);
+}
+
+
+</span></span>
+</code></pre>
+</body>
+</html>
+  </body>
+</html>

@@ -1,0 +1,98 @@
+#######################################
+# Syntax Coloring Map For Ethernet
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+MWiFi	KEYWORD1
+HTTP	KEYWORD1
+HTTPlib	KEYWORD1
+
+CONNSTATUS	KEYWORD1
+CONNEVDATA	KEYWORD1
+ERRORTYPE	KEYWORD1
+PINGTIME	KEYWORD1
+NNETS	KEYWORD1
+
+WEBRES	KEYWORD1
+Resource	KEYWORD1
+
+errorHandle	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+getConfig	KEYWORD2
+existSSID	KEYWORD2
+scanNets	KEYWORD2
+getNetScanned	KEYWORD2
+getSSIDBestOpen	KEYWORD2
+setNetMode	KEYWORD2
+setPowerOff	KEYWORD2
+setPowerSave	KEYWORD2
+setFullPower	KEYWORD2
+ConnSetOpen	KEYWORD2
+ConnSetWPA	KEYWORD2
+ConnectOpen	KEYWORD2
+ConnectWPAwithPsw	KEYWORD2
+ConnectWPAandGetKey	KEYWORD2
+ConnectWPAwithKey	KEYWORD2
+ConnectWPAandGetKeyEE	KEYWORD2
+ConnectWPAwithKeyEE	KEYWORD2
+storeKeyOnEEPROM	KEYWORD2
+isKeyInEEPROM	KEYWORD2
+Connect	KEYWORD2
+Disconnect	KEYWORD2
+ping	KEYWORD2
+openSockTCP	KEYWORD2
+openServerTCP	KEYWORD2
+pollingAccept	KEYWORD2
+writeData	KEYWORD2
+writeDataLn	KEYWORD2
+writeDataPM	KEYWORD2
+writeDataLnPM	KEYWORD2
+readData	KEYWORD2
+readDataLn	KEYWORD2
+closeSock	KEYWORD2
+getMAC	KEYWORD2
+getName	KEYWORD2
+setIP	KEYWORD2
+getIP	KEYWORD2
+setIPdhcp	KEYWORD2
+setNetMask	KEYWORD2
+getNetMask	KEYWORD2
+setGateway	KEYWORD2
+getGateway	KEYWORD2
+getRemoteIP	KEYWORD2
+setLed	KEYWORD2
+resetMCW	KEYWORD2
+
+getRequest	KEYWORD2
+sendResponse	KEYWORD2
+sendShortResponse	KEYWORD2
+sendDynResponse	KEYWORD2
+sendRequestGET	KEYWORD2
+sendRequestPOST	KEYWORD2
+sendRequestPUT	KEYWORD2
+sendRequestDELETE	KEYWORD2
+setUserAndPassword	KEYWORD2
+
+getResponse	KEYWORD2
+getNextResponseBuffer	KEYWORD2
+getResponseMessage	KEYWORD2
+
+getParameter	KEYWORD2
+addParameter	KEYWORD2
+
+respOKempty	KEYWORD2
+respERR	KEYWORD2
+respNOK	KEYWORD2
+respNoAuth	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
