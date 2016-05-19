@@ -1,3 +1,6 @@
+
+ATTENTION see NewREADME.txt (new version for new IDE problems)
+
 Version 2.0
 Update
 
